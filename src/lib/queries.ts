@@ -175,3 +175,17 @@ export async function getHeroPair(heroProjectId: string) {
     pair: { before: toClientPhoto(before), after: toClientPhoto(before.pairedAfter) } satisfies Pair,
   };
 }
+
+/** Everything presentation mode needs, in display order. */
+export async function getPresentation() {
+  "use cache";
+  cacheLife("days");
+  cacheTag("projects");
+  const slugs = await db.project.findMany({
+    where: { published: true },
+    select: { slug: true },
+    orderBy: [{ featured: "desc" }, { sortOrder: "asc" }, { completedAt: "desc" }],
+  });
+  const projects = await Promise.all(slugs.map((s) => getProject(s.slug)));
+  return projects.filter((p): p is ProjectDetail => !!p);
+}

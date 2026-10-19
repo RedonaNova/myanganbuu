@@ -492,3 +492,24 @@ export const quotes = {
     download: "PDF татах",
   },
 };
+
+export const present = {
+  title: "Ажил үзүүлэх",
+  hint: "Ажлаа сонгоод, захиалагчид утсан дээрээ харуулна.",
+  exit: "Гарах",
+  back: "Буцах",
+  prev: "Өмнөх",
+  next: "Дараах",
+  saveOffline: "Офлайнд хадгалах",
+  saving: "Хадгалж байна",
+  savedOffline: "Сүлжээгүй үед ч харагдана",
+  offline: "Сүлжээгүй байна. Хадгалсан зургууд харагдана.",
+  photos: "зураг",
+};
+
+export const pwa = {
+  shortName: "Мянганбуу",
+  shortcutPresent: "Ажил үзүүлэх",
+  shortcutInquiries: "Хүсэлтүүд",
+  shortcutNewProject: "Шинэ төсөл",
+};
