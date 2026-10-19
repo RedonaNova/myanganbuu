@@ -1,0 +1,232 @@
+// Мянганбуу — data model.
+// Migrations: the DB user cannot create a shadow database, so new migrations
+// are generated with `npm run db:diff -- <name>` and applied with
+// `prisma migrate deploy` (see package.json).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// ─── Auth ────────────────────────────────────────────────────────────────
+
+model AdminUser {
+  id           Int       @id @default(autoincrement())
+  username     String    @unique @db.VarChar(64)
+  passwordHash String    @db.VarChar(255)
+  createdAt    DateTime  @default(now())
+  sessions     Session[]
+}
+
+model Session {
+  // sha256 of the cookie token; the raw token never touches the database.
+  id        String    @id @db.Char(64)
+  userId    Int
+  user      AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model RateLimit {
+  key         String   @id @db.VarChar(191)
+  count       Int
+  windowStart DateTime
+}
+
+// ─── Portfolio ───────────────────────────────────────────────────────────
+
+enum Room {
+  KITCHEN
+  BATHROOM
+  LIVING
+  BEDROOM
+  FACADE
+  OTHER
+}
+
+model Project {
+  id           Int       @id @default(autoincrement())
+  slug         String    @unique @db.VarChar(191)
+  title        String    @db.VarChar(191)
+  description  String    @db.Text
+  room         Room      @default(OTHER)
+  district     String    @default("") @db.VarChar(64)
+  areaM2       Decimal?  @db.Decimal(8, 1)
+  durationDays Int?
+  completedAt  DateTime? @db.Date
+  featured     Boolean   @default(false)
+  published    Boolean   @default(false)
+  isSample     Boolean   @default(false)
+  sortOrder    Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Cover for cards / OG image, and the BEFORE photo of the headline pair.
+  coverPhotoId Int?    @unique
+  coverPhoto   Photo?  @relation("ProjectCover", fields: [coverPhotoId], references: [id], onDelete: SetNull)
+  heroPairId   Int?    @unique
+  heroPair     Photo?  @relation("ProjectHeroPair", fields: [heroPairId], references: [id], onDelete: SetNull)
+
+  photos   Photo[]          @relation("ProjectPhotos")
+  services ProjectService[]
+
+  @@index([published, featured])
+  @@index([published, room])
+}
+
+model ProjectService {
+  projectId   Int
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  serviceSlug String  @db.VarChar(32)
+
+  @@id([projectId, serviceSlug])
+  @@index([serviceSlug])
+}
+
+enum PhotoRole {
+  BEFORE
+  AFTER
+  GALLERY
+  PROGRESS
+}
+
+model Photo {
+  id            Int       @id @default(autoincrement())
+  projectId     Int
+  project       Project   @relation("ProjectPhotos", fields: [projectId], references: [id], onDelete: Cascade)
+  role          PhotoRole @default(GALLERY)
+  alt           String    @default("") @db.VarChar(255)
+  caption       String    @default("") @db.VarChar(255)
+  // For PROGRESS photos: the date shown on the "ажлын явц" timeline.
+  milestoneDate DateTime? @db.Date
+  sortOrder     Int       @default(0)
+  // Pre-generated variants live at UPLOAD_DIR/<storageKey>/<width>.<avif|webp>
+  storageKey    String    @unique @db.VarChar(64)
+  width         Int
+  height        Int
+  lqip          String    @db.Text
+  createdAt     DateTime  @default(now())
+
+  // Set on a BEFORE photo, pointing at its AFTER counterpart.
+  pairedAfterId Int?   @unique
+  pairedAfter   Photo? @relation("BeforeAfter", fields: [pairedAfterId], references: [id], onDelete: SetNull)
+  pairedBefore  Photo? @relation("BeforeAfter")
+
+  coverOf    Project? @relation("ProjectCover")
+  heroPairOf Project? @relation("ProjectHeroPair")
+
+  @@index([projectId, sortOrder])
+}
+
+// ─── Quotes ──────────────────────────────────────────────────────────────
+
+model RateItem {
+  id        Int      @id @default(autoincrement())
+  label     String   @db.VarChar(191)
+  unit      String   @db.VarChar(32)
+  // Whole tögrög.
+  unitPrice Int      @default(0)
+  category  String   @default("") @db.VarChar(64)
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}
+
+model Quote {
+  id                Int         @id @default(autoincrement())
+  publicToken       String      @unique @db.VarChar(32)
+  clientName        String      @default("") @db.VarChar(191)
+  address           String      @default("") @db.VarChar(255)
+  note              String      @db.Text
+  includesMaterials Boolean     @default(false)
+  validUntil        DateTime    @db.Date
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  inquiryId         Int?
+  inquiry           Inquiry?    @relation(fields: [inquiryId], references: [id], onDelete: SetNull)
+  lines             QuoteLine[]
+}
+
+// Snapshot of a rate item at quoting time: editing the rate card later never
+// changes a quote the client has already seen.
+model QuoteLine {
+  id        Int     @id @default(autoincrement())
+  quoteId   Int
+  quote     Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  label     String  @db.VarChar(191)
+  unit      String  @db.VarChar(32)
+  unitPrice Int
+  quantity  Decimal @db.Decimal(10, 2)
+  sortOrder Int     @default(0)
+
+  @@index([quoteId])
+}
+
+// ─── Inquiries ───────────────────────────────────────────────────────────
+
+enum ContactMethod {
+  MESSENGER
+  SMS
+}
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  QUOTED
+  STARTED
+  DONE
+}
+
+model Inquiry {
+  id            Int            @id @default(autoincrement())
+  serviceSlug   String         @default("") @db.VarChar(32)
+  room          Room?
+  areaM2        Decimal?       @db.Decimal(8, 1)
+  district      String         @default("") @db.VarChar(64)
+  message       String         @db.Text
+  timing        String         @default("") @db.VarChar(32)
+  contactMethod ContactMethod
+  contactValue  String         @db.VarChar(191)
+  name          String         @default("") @db.VarChar(191)
+  status        InquiryStatus  @default(NEW)
+  adminNote     String         @db.Text
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  photos        InquiryPhoto[]
+  quotes        Quote[]
+
+  @@index([status, createdAt])
+}
+
+model InquiryPhoto {
+  id         Int     @id @default(autoincrement())
+  inquiryId  Int
+  inquiry    Inquiry @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  storageKey String  @unique @db.VarChar(64)
+  width      Int
+  height     Int
+  lqip       String  @db.Text
+
+  @@index([inquiryId])
+}
+
+// ─── Misc ────────────────────────────────────────────────────────────────
+
+model PushSubscription {
+  id        Int      @id @default(autoincrement())
+  endpoint  String   @unique @db.VarChar(512)
+  p256dh    String   @db.VarChar(255)
+  auth      String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+}
+
+model Setting {
+  key   String @id @db.VarChar(64)
+  value String @db.Text
+}
