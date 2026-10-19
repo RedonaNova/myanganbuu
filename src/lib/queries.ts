@@ -151,3 +151,27 @@ export async function getPublishedSlugs() {
     orderBy: { id: "desc" },
   });
 }
+
+/** The before/after shown above the fold: chosen in settings, else the first featured. */
+export async function getHeroPair(heroProjectId: string) {
+  "use cache";
+  cacheLife("days");
+  cacheTag("projects", "settings");
+  const id = Number(heroProjectId);
+  const include = { heroPair: { include: { pairedAfter: true } } } as const;
+  const chosen = id ? await db.project.findFirst({ where: { id, published: true, heroPairId: { not: null } }, include }) : null;
+  const project =
+    chosen ??
+    (await db.project.findFirst({
+      where: { published: true, heroPairId: { not: null } },
+      include,
+      orderBy: [{ featured: "desc" }, { sortOrder: "asc" }, { completedAt: "desc" }],
+    }));
+  const before = project?.heroPair;
+  if (!project || !before?.pairedAfter) return null;
+  return {
+    slug: project.slug,
+    title: project.title,
+    pair: { before: toClientPhoto(before), after: toClientPhoto(before.pairedAfter) } satisfies Pair,
+  };
+}

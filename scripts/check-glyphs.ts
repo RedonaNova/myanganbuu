@@ -9,6 +9,8 @@ const sources = ["src/messages/mn.ts", "src/content/services.ts", "prisma/seed.t
 
 // Characters inside "…", '…' and `…` string literals; comments are stripped.
 const LITERAL = /"((?:[^"\\\n]|\\.)*)"|'((?:[^'\\\n]|\\.)*)'|`((?:[^`\\]|\\.)*)`/g;
+// Symbols that only appear in script console output, never on a page.
+const CONSOLE_ONLY = new Set(["✓", "✗"]);
 const COMMENT = /\/\*[\s\S]*?\*\/|^\s*\/\/.*$/gm;
 
 const chars = new Set<string>([" "]); // NBSP, used by src/lib/format.ts
@@ -16,7 +18,7 @@ for (const file of sources) {
   const code = readFileSync(file, "utf8").replace(COMMENT, "");
   for (const m of code.matchAll(LITERAL)) {
     for (const ch of m[1] ?? m[2] ?? m[3] ?? "") {
-      if (!/[\s\\]/.test(ch) || ch === " ") chars.add(ch);
+      if ((!/[\s\\]/.test(ch) || ch === " ") && !CONSOLE_ONLY.has(ch)) chars.add(ch);
     }
   }
 }
