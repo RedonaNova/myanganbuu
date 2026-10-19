@@ -4,8 +4,8 @@ import { site } from "@/messages/mn";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.SITE_URL ?? "http://localhost:3000"),
-  title: { default: `${site.name} — ${site.tagline}`, template: `%s — ${site.name}` },
+  metadataBase: new URL(process.env.SITE_URL ?? "http://localhost:4000"),
+  title: { default: `${site.name} | ${site.tagline}`, template: `%s | ${site.name}` },
   description: site.description,
   openGraph: { locale: site.locale, siteName: site.name, type: "website" },
 };

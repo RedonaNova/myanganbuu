@@ -1,4 +1,4 @@
-// Мянганбуу — data model.
+// Мянганбуу: data model.
 // Migrations: the DB user cannot create a shadow database, so new migrations
 // are generated with `npm run db:diff -- <name>` and applied with
 // `prisma migrate deploy` (see package.json).
@@ -172,7 +172,7 @@ model QuoteLine {
 
 enum ContactMethod {
   MESSENGER
-  SMS
+  VIBER
 }
 
 enum InquiryStatus {

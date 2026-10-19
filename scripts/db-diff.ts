@@ -1,5 +1,6 @@
 // Creates a new migration from schema changes without a shadow database
-// (the DB user can't CREATE DATABASE):
+// (the DB user can't CREATE DATABASE). Diffs the live DB, so run
+// `npm run db:deploy` first if there are unapplied migrations:
 //   npm run db:diff -- add_something
 // Review the generated SQL, then apply with `npm run db:deploy`.
 import { execFileSync } from "node:child_process";
@@ -14,7 +15,7 @@ if (!name) {
 
 const sql = execFileSync(
   "npx",
-  ["prisma", "migrate", "diff", "--from-migrations", "prisma/migrations", "--to-schema", "prisma/schema.prisma", "--script"],
+  ["prisma", "migrate", "diff", "--from-config-datasource", "--to-schema", "prisma/schema.prisma", "--script"],
   { encoding: "utf8", shell: process.platform === "win32" },
 );
 if (!sql.replace(/--.*$/gm, "").trim()) {
@@ -25,4 +26,4 @@ const stamp = new Date().toISOString().replace(/\D/g, "").slice(0, 14);
 const dir = path.join("prisma", "migrations", `${stamp}_${name}`);
 mkdirSync(dir, { recursive: true });
 writeFileSync(path.join(dir, "migration.sql"), sql);
-console.log(`Wrote ${dir}/migration.sql — review it, then run: npm run db:deploy`);
+console.log(`Wrote ${dir}/migration.sql. Review it, then run: npm run db:deploy`);

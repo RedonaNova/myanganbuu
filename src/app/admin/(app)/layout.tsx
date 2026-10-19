@@ -9,7 +9,7 @@ import { IconExternal, IconLogout } from "@/components/icons";
 import { admin as t, site } from "@/messages/mn";
 
 export const metadata: Metadata = {
-  title: { default: t.title, template: `%s — ${t.title}` },
+  title: { default: t.title, template: `%s | ${t.title}` },
   robots: { index: false, follow: false },
 };
 

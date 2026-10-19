@@ -21,7 +21,10 @@ for (const file of sources) {
   }
 }
 
-let failed = false;
+// House style: no em dashes anywhere in the copy.
+let failed = chars.has("—");
+if (failed) console.error("✗ Em dash (U+2014) found in copy. Use a colon, comma or period instead.");
+
 for (const path of fonts) {
   const font = fontkit.openSync(path) as fontkit.Font;
   const missing = [...chars].filter((ch) => !font.hasGlyphForCodePoint(ch.codePointAt(0)!));
