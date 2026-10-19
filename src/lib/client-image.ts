@@ -1,13 +1,11 @@
 "use client";
 
-const MAX_EDGE = 2560;
-
 /**
  * Shrinks a phone photo before upload (12 MB → ~1.5 MB) while applying its
  * EXIF orientation. Falls back to the original file when the browser can't
  * decode it (e.g. HEIC on Android Chrome); the server then tries itself.
  */
-export async function prepareImage(file: File): Promise<Blob> {
+export async function prepareImage(file: File, maxEdge = 2560): Promise<Blob> {
   if (typeof createImageBitmap !== "function") return file;
   let bitmap: ImageBitmap;
   try {
@@ -15,7 +13,7 @@ export async function prepareImage(file: File): Promise<Blob> {
   } catch {
     return file;
   }
-  const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
+  const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height));
   const width = Math.round(bitmap.width * scale);
   const height = Math.round(bitmap.height * scale);
 
