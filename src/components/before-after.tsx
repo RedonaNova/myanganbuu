@@ -26,6 +26,7 @@ export function BeforeAfter({
   priority = false,
   rounded = true,
   fill = false,
+  className = "",
 }: {
   before: ClientPhoto;
   after: ClientPhoto;
@@ -36,6 +37,8 @@ export function BeforeAfter({
   rounded?: boolean;
   /** Fill the parent instead of using the photo's aspect ratio. */
   fill?: boolean;
+  /** Extra classes on the root, e.g. "lg:aspect-[16/9]!" for a wider crop. */
+  className?: string;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const handleRef = useRef<HTMLDivElement>(null);
@@ -88,7 +91,8 @@ export function BeforeAfter({
       className={
         "ba group relative isolate w-full touch-pan-y overflow-hidden bg-surface-2 select-none " +
         (rounded ? "rounded-card " : "") +
-        (fill ? "h-full" : "")
+        (fill ? "h-full " : "") +
+        className
       }
       style={fill ? undefined : { aspectRatio: `${after.width} / ${after.height}` }}
       onPointerDown={(e) => {

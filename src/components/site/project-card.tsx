@@ -12,12 +12,13 @@ export function ProjectCard({
   project,
   sizes = "(min-width: 1024px) 40rem, (min-width: 640px) 50vw, 100vw",
   priority = false,
-  tall = false,
+  fillCell = false,
 }: {
   project: Card;
   sizes?: string;
   priority?: boolean;
-  tall?: boolean;
+  /** On large screens, fill the grid cell instead of using a fixed aspect. */
+  fillCell?: boolean;
 }) {
   const facts = [
     project.district,
@@ -30,7 +31,7 @@ export function ProjectCard({
       href={`/tusul/${project.slug}`}
       className={
         "group relative isolate block overflow-hidden rounded-card bg-surface-2 " +
-        (tall ? "aspect-[4/5] md:aspect-auto md:h-full md:min-h-[36rem]" : "aspect-[4/5] sm:aspect-[5/4]")
+        "aspect-[4/5] sm:aspect-[5/4] " + (fillCell ? "lg:aspect-auto lg:h-full" : "")
       }
     >
       {project.cover && (

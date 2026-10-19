@@ -75,10 +75,10 @@ async function FilteredGrid({ searchParams }: Pick<PageProps<"/tusul">, "searchP
           </Link>
         </div>
       ) : (
-        <ul className="mt-6 grid gap-4 sm:grid-cols-2 md:gap-6">
+        <ul className="mt-6 grid gap-4 sm:grid-cols-2 md:gap-6 xl:grid-cols-3">
           {projects.map((p, i) => (
             <li key={p.slug}>
-              <ProjectCard project={p} priority={i < 2} />
+              <ProjectCard project={p} priority={i < 3} sizes="(min-width: 1280px) 26rem, (min-width: 640px) 50vw, 100vw" />
             </li>
           ))}
         </ul>

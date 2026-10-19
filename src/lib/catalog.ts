@@ -2,6 +2,7 @@
 // src/messages/mn.ts; these are the stable keys stored in the database.
 
 export const SERVICE_SLUGS = [
+  "siding",
   "tiling",
   "drywall",
   "panels",
@@ -10,7 +11,6 @@ export const SERVICE_SLUGS = [
   "electrical",
   "furniture",
   "stretch-ceiling",
-  "siding",
 ] as const;
 export type ServiceSlug = (typeof SERVICE_SLUGS)[number];
 
