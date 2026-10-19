@@ -16,7 +16,8 @@
     "db:diff": "tsx scripts/db-diff.ts",
     "db:seed": "prisma db seed",
     "admin:create": "tsx scripts/create-admin.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "icons": "node scripts/build-icons.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
