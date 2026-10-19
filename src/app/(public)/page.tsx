@@ -3,6 +3,7 @@ import { SERVICE_SLUGS } from "@/lib/catalog";
 import { getFeaturedCards, getHeroPair } from "@/lib/queries";
 import { getSettings, messengerLink, viberLink } from "@/lib/settings";
 import { BeforeAfter } from "@/components/before-after";
+import { sliderLabels } from "@/lib/labels";
 import { ProjectCard } from "@/components/site/project-card";
 import { ServiceCard } from "@/components/site/service-card";
 import { IconArrowRight } from "@/components/icons";
@@ -44,7 +45,7 @@ export default async function Home() {
         {hero && (
           <figure>
             <div className="max-h-[78dvh] overflow-hidden rounded-card">
-              <BeforeAfter before={hero.pair.before} after={hero.pair.after} priority sizes="(min-width: 1024px) 46rem, 100vw" />
+              <BeforeAfter before={hero.pair.before} after={hero.pair.after} labels={sliderLabels} priority sizes="(min-width: 1024px) 46rem, 100vw" />
             </div>
             <figcaption className="mt-3 flex items-center justify-between gap-4 text-sm text-ink-2">
               <span className="hidden sm:inline">{projectPage.compareHint}</span>

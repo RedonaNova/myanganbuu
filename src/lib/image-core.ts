@@ -4,9 +4,10 @@ import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 import { randomBytes } from "node:crypto";
 import sharp from "sharp";
+import { MEDIA_WIDTHS } from "./photos";
 
 /** Widths generated for every photo. Must match next.config deviceSizes. */
-export const WIDTHS = [480, 828, 1200, 1920] as const;
+export const WIDTHS = MEDIA_WIDTHS;
 export type Width = (typeof WIDTHS)[number];
 
 /** public = portfolio photos served at /media; private = client inquiry photos. */

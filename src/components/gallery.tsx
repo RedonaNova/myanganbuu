@@ -1,17 +1,18 @@
 "use client";
 
-import Image from "next/image";
+import { MediaImage } from "@/components/media-image";
 import { useRef, useState } from "react";
 import type { ClientPhoto } from "@/lib/photos";
 import { IconArrowLeft, IconArrowRight, IconX } from "@/components/icons";
-import { common, projectPage as t } from "@/messages/mn";
 
 /**
  * Masonry-style photo grid (CSS columns, no JS layout). Tapping a photo opens
  * a full-screen viewer: native <dialog> + horizontal scroll-snap, so swiping
  * uses the browser's own momentum scrolling.
  */
-export function Gallery({ photos }: { photos: ClientPhoto[] }) {
+export type GalleryLabels = { gallery: string; openPhoto: string; prev: string; next: string; close: string };
+
+export function Gallery({ photos, labels: t }: { photos: ClientPhoto[]; labels: GalleryLabels }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
@@ -48,15 +49,7 @@ export function Gallery({ photos }: { photos: ClientPhoto[] }) {
                 className="group relative block w-full overflow-hidden rounded-2xl bg-surface-2"
                 style={{ aspectRatio: `${p.width} / ${p.height}` }}
               >
-                <Image
-                  src={p.src}
-                  alt={p.alt}
-                  fill
-                  sizes="(min-width: 768px) 26rem, 50vw"
-                  placeholder="blur"
-                  blurDataURL={p.lqip}
-                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none"
-                />
+                <MediaImage photo={p} alt={p.alt} sizes="(min-width: 768px) 26rem, 50vw" fill className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none" />
               </button>
               {p.caption && <figcaption className="mt-2 text-sm text-ink-2">{p.caption}</figcaption>}
             </figure>
@@ -84,16 +77,7 @@ export function Gallery({ photos }: { photos: ClientPhoto[] }) {
           {photos.map((p, i) => (
             <figure key={p.id} className="relative flex h-full w-full shrink-0 snap-center flex-col justify-center">
               <div className="relative h-full w-full">
-                <Image
-                  src={p.src}
-                  alt={p.alt}
-                  fill
-                  sizes="100vw"
-                  placeholder="blur"
-                  blurDataURL={p.lqip}
-                  loading={Math.abs(i - index) <= 1 ? "eager" : "lazy"}
-                  className="object-contain"
-                />
+                <MediaImage photo={p} alt={p.alt} sizes="100vw" fill priority={Math.abs(i - index) <= 1} className="object-contain" />
               </div>
               {p.caption && <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 p-5 pb-8 text-center text-base">{p.caption}</figcaption>}
             </figure>
@@ -105,7 +89,7 @@ export function Gallery({ photos }: { photos: ClientPhoto[] }) {
           <button
             type="button"
             onClick={() => dialogRef.current?.close()}
-            aria-label={common.close}
+            aria-label={t.close}
             className="pointer-events-auto grid size-12 place-items-center rounded-full bg-black/50 hover:bg-black/70"
           >
             <IconX />

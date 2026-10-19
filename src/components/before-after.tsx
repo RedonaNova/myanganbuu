@@ -1,9 +1,8 @@
 "use client";
 
-import Image from "next/image";
+import { MediaImage } from "@/components/media-image";
 import { useEffect, useRef } from "react";
 import type { ClientPhoto } from "@/lib/photos";
-import { projectPage as t } from "@/messages/mn";
 
 /**
  * Before/after comparison. The AFTER photo is the base layer; the BEFORE photo
@@ -17,9 +16,12 @@ import { projectPage as t } from "@/messages/mn";
  * - Fixed aspect ratio from the photo dimensions: zero layout shift.
  * - Without JS it renders a static 50/50 split.
  */
+export type SliderLabels = { before: string; after: string; compare: string };
+
 export function BeforeAfter({
   before,
   after,
+  labels: t,
   sizes = "(min-width: 82rem) 78rem, 100vw",
   priority = false,
   rounded = true,
@@ -27,6 +29,8 @@ export function BeforeAfter({
 }: {
   before: ClientPhoto;
   after: ClientPhoto;
+  /** Passed from the server so the client bundle carries only these strings. */
+  labels: SliderLabels;
   sizes?: string;
   priority?: boolean;
   rounded?: boolean;
@@ -105,31 +109,9 @@ export function BeforeAfter({
         delete rootRef.current!.dataset.dragging;
       }}
     >
-      <Image
-        src={after.src}
-        alt={after.alt}
-        fill
-        sizes={sizes}
-        placeholder="blur"
-        blurDataURL={after.lqip}
-        loading={priority ? "eager" : "lazy"}
-        fetchPriority={priority ? "high" : undefined}
-        className="pointer-events-none object-cover"
-        draggable={false}
-      />
+      <MediaImage photo={after} alt={after.alt} sizes={sizes} fill priority={priority} className="pointer-events-none object-cover" />
       <div className="ba-before absolute inset-0">
-        <Image
-          src={before.src}
-          alt={before.alt}
-          fill
-          sizes={sizes}
-          placeholder="blur"
-          blurDataURL={before.lqip}
-          loading={priority ? "eager" : "lazy"}
-          fetchPriority={priority ? "high" : undefined}
-          className="pointer-events-none object-cover"
-          draggable={false}
-        />
+        <MediaImage photo={before} alt={before.alt} sizes={sizes} fill priority={priority} className="pointer-events-none object-cover" />
       </div>
 
       <span aria-hidden="true" className="ba-label ba-label-before">
@@ -144,7 +126,7 @@ export function BeforeAfter({
         ref={handleRef}
         role="slider"
         tabIndex={0}
-        aria-label={t.compareLabel}
+        aria-label={t.compare}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={50}

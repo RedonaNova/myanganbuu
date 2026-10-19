@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { MediaImage } from "@/components/media-image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getMoreProjects, getProject, type ProjectDetail } from "@/lib/queries";
 import { area, days, longDate, monthYear } from "@/lib/format";
 import { BeforeAfter } from "@/components/before-after";
+import { galleryLabels, shareLabels, sliderLabels } from "@/lib/labels";
 import { Gallery } from "@/components/gallery";
 import { ShareButton } from "@/components/share-button";
 import { ProjectCard } from "@/components/site/project-card";
@@ -46,7 +47,7 @@ async function ProjectContent({ params }: Pick<PageProps<"/tusul/[slug]">, "para
       {project.heroPair ? (
         <div className="container-page mt-8 md:mt-12">
           <figure>
-            <BeforeAfter before={project.heroPair.before} after={project.heroPair.after} priority />
+            <BeforeAfter before={project.heroPair.before} after={project.heroPair.after} labels={sliderLabels} priority />
             <figcaption className="mt-3 text-center text-sm text-ink-2">{t.compareHint}</figcaption>
           </figure>
         </div>
@@ -54,17 +55,7 @@ async function ProjectContent({ params }: Pick<PageProps<"/tusul/[slug]">, "para
         project.cover && (
           <div className="container-page mt-8 md:mt-12">
             <div className="relative overflow-hidden rounded-card bg-surface-2" style={{ aspectRatio: `${project.cover.width} / ${project.cover.height}` }}>
-              <Image
-                src={project.cover.src}
-                alt={project.cover.alt}
-                fill
-                sizes="(min-width: 82rem) 78rem, 100vw"
-                placeholder="blur"
-                blurDataURL={project.cover.lqip}
-                loading="eager"
-                fetchPriority="high"
-                className="object-cover"
-              />
+              <MediaImage photo={project.cover} alt={project.cover.alt} sizes="(min-width: 82rem) 78rem, 100vw" fill priority className="object-cover" />
             </div>
           </div>
         )
@@ -90,7 +81,7 @@ async function ProjectContent({ params }: Pick<PageProps<"/tusul/[slug]">, "para
           <ul className="mt-8 grid gap-6 md:grid-cols-2">
             {project.pairs.map((pair) => (
               <li key={pair.before.id}>
-                <BeforeAfter before={pair.before} after={pair.after} sizes="(min-width: 768px) 39rem, 100vw" />
+                <BeforeAfter before={pair.before} after={pair.after} labels={sliderLabels} sizes="(min-width: 768px) 39rem, 100vw" />
               </li>
             ))}
           </ul>
@@ -104,7 +95,7 @@ async function ProjectContent({ params }: Pick<PageProps<"/tusul/[slug]">, "para
             <span className="ml-3 align-middle text-lg font-semibold text-ink-2 tabular">{project.gallery.length}</span>
           </h2>
           <div className="mt-8">
-            <Gallery photos={project.gallery} />
+            <Gallery photos={project.gallery} labels={galleryLabels} />
           </div>
         </section>
       )}
@@ -154,7 +145,7 @@ function ProjectHeader({ project }: { project: ProjectDetail }) {
           {facts.map((f) => (
             <div key={f.label} className="bg-bg p-4 md:p-5">
               <dt className="text-sm font-semibold text-ink-2">{f.label}</dt>
-              <dd className="mt-1 font-display text-xl font-bold tabular md:text-2xl">{f.value}</dd>
+              <dd className="mt-1 font-display text-lg font-bold break-words tabular sm:text-xl md:text-2xl">{f.value}</dd>
             </div>
           ))}
         </dl>
@@ -172,6 +163,7 @@ function ProjectHeader({ project }: { project: ProjectDetail }) {
         ))}
         <ShareButton
           title={project.title}
+          labels={shareLabels}
           className="ml-auto inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-base font-semibold text-ink-2 transition-colors duration-150 hover:text-ink"
         />
       </div>
@@ -194,7 +186,7 @@ function Progress({ project }: { project: ProjectDetail }) {
             )}
             {p.caption && <p className="mt-1 text-lg">{p.caption}</p>}
             <div className="relative mt-4 max-w-2xl overflow-hidden rounded-2xl bg-surface-2" style={{ aspectRatio: `${p.width} / ${p.height}` }}>
-              <Image src={p.src} alt={p.alt} fill sizes="(min-width: 768px) 42rem, 100vw" placeholder="blur" blurDataURL={p.lqip} className="object-cover" />
+              <MediaImage photo={p} alt={p.alt} sizes="(min-width: 768px) 42rem, 100vw" fill className="object-cover" />
             </div>
           </li>
         ))}

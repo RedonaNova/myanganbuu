@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { MediaImage } from "@/components/media-image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
@@ -296,7 +296,7 @@ export function PhotoManager({
                   <div className="grid grid-cols-2 gap-px bg-line">
                     {[before, after].map((p, j) => (
                       <div key={p.id} className="relative aspect-4/3 bg-surface-2">
-                        <Image src={p.src} alt={p.alt} fill sizes="25vw" placeholder="blur" blurDataURL={p.lqip} className="object-cover" />
+                        <MediaImage photo={p} alt={p.alt} sizes="25vw" fill className="object-cover" />
                         <span className={roleChip(j === 0 ? "BEFORE" : "AFTER")}>{photoRoles[j === 0 ? "BEFORE" : "AFTER"]}</span>
                       </div>
                     ))}
@@ -462,16 +462,7 @@ function SortableTile({
           (dimmed && !picking ? "hover:ring-4 hover:ring-accent/60 " : "")
         }
       >
-        <Image
-          src={photo.src}
-          alt=""
-          fill
-          sizes="(min-width: 1024px) 20vw, (min-width: 640px) 30vw, 50vw"
-          placeholder="blur"
-          blurDataURL={photo.lqip}
-          className="pointer-events-none object-cover select-none"
-          draggable={false}
-        />
+        <MediaImage photo={photo} alt="" sizes="(min-width: 1024px) 20vw, (min-width: 640px) 30vw, 50vw" fill className="pointer-events-none object-cover select-none" />
         {photo.role !== "GALLERY" && (
           <span className={roleChip(photo.role)}>
             {photoRoles[photo.role]}
@@ -558,7 +549,7 @@ function PhotoSheet({
 
       <div className="space-y-6 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
         <div className="relative overflow-hidden rounded-2xl bg-surface-2" style={{ aspectRatio: `${photo.width} / ${photo.height}`, maxHeight: "45dvh", marginInline: "auto" }}>
-          <Image src={photo.src} alt={photo.alt} fill sizes="(min-width: 768px) 36rem, 100vw" placeholder="blur" blurDataURL={photo.lqip} className="object-contain" />
+          <MediaImage photo={photo} alt={photo.alt} sizes="(min-width: 768px) 36rem, 100vw" fill className="object-contain" />
         </div>
 
         <fieldset>

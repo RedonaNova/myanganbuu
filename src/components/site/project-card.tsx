@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { MediaImage } from "@/components/media-image";
 import Link from "next/link";
 import type { ProjectCard as Card } from "@/lib/queries";
 import { area, days } from "@/lib/format";
@@ -34,17 +34,7 @@ export function ProjectCard({
       }
     >
       {project.cover && (
-        <Image
-          src={project.cover.src}
-          alt={project.cover.alt}
-          fill
-          sizes={sizes}
-          placeholder="blur"
-          blurDataURL={project.cover.lqip}
-          loading={priority ? "eager" : "lazy"}
-          fetchPriority={priority ? "high" : undefined}
-          className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none"
-        />
+        <MediaImage photo={project.cover} alt={project.cover.alt} sizes={sizes} fill priority={priority} className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none" />
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" aria-hidden="true" />
       <div className="absolute inset-x-0 bottom-0 p-5 text-white md:p-7">

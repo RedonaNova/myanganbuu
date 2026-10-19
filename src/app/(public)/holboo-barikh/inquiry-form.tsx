@@ -4,11 +4,19 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { prepareImage } from "@/lib/client-image";
 import { ROOMS, SERVICE_SLUGS } from "@/lib/catalog";
-import { contactMethods, districts, inquiry as t, rooms, serviceNames } from "@/messages/mn";
+import type { contactMethods as ContactMethods, districts as Districts, inquiry as Inquiry, rooms as Rooms, serviceNames as ServiceNames } from "@/messages/mn";
+
+export type InquiryCopy = {
+  t: typeof Inquiry;
+  rooms: typeof Rooms;
+  serviceNames: typeof ServiceNames;
+  contactMethods: typeof ContactMethods;
+  districts: typeof Districts;
+};
 
 const MAX_PHOTOS = 6;
 
-type ErrorKey = keyof typeof t.errors;
+type ErrorKey = keyof typeof Inquiry.errors;
 
 const field =
   "block w-full min-h-14 rounded-control border border-line bg-surface px-4 text-lg text-ink placeholder:text-ink-2/70 " +
@@ -23,7 +31,16 @@ const tile =
  * Works as a plain multipart form without JS. With JS it shrinks photos
  * before sending (mobile data), shows previews and stays on the page on error.
  */
-export function InquiryForm({ startedAt, initialError }: { startedAt: number; initialError?: ErrorKey }) {
+export function InquiryForm({
+  startedAt,
+  initialError,
+  copy: { t, rooms, serviceNames, contactMethods, districts },
+}: {
+  startedAt: number;
+  initialError?: ErrorKey;
+  /** Passed from the server so the client bundle carries only this page's copy. */
+  copy: InquiryCopy;
+}) {
   const router = useRouter();
   const [photos, setPhotos] = useState<{ file: File; url: string }[]>([]);
   const [error, setError] = useState<ErrorKey | undefined>(initialError);

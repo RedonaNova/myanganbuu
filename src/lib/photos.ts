@@ -39,3 +39,6 @@ export function toClientPhoto(p: {
     pairedAfterId: p.pairedAfterId,
   };
 }
+
+/** Widths generated for every photo (see src/lib/image-core.ts). */
+export const MEDIA_WIDTHS = [480, 828, 1200, 1920] as const;

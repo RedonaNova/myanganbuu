@@ -6,14 +6,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // Native modules stay out of the server bundle.
   serverExternalPackages: ["sharp", "@node-rs/argon2", "@react-pdf/renderer"],
-  images: {
-    // Variants are generated once at upload time (src/lib/images.ts) and
-    // served from /media; the runtime optimizer is never used.
-    loader: "custom",
-    loaderFile: "./src/lib/image-loader.ts",
-    deviceSizes: [480, 828, 1200, 1920],
-    imageSizes: [],
-  },
+  // Photos don't use next/image: variants are generated once at upload time
+  // (src/lib/image-core.ts), served from /media and rendered by MediaImage.
   experimental: {
     serverActions: {
       bodySizeLimit: "1mb",

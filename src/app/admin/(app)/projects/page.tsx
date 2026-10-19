@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { MediaImage } from "@/components/media-image";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/session";
@@ -40,15 +40,7 @@ export default async function ProjectsPage() {
                 >
                   <div className="relative size-24 shrink-0 overflow-hidden rounded-2xl bg-surface-2">
                     {p.coverPhoto && (
-                      <Image
-                        src={`/media/${p.coverPhoto.storageKey}`}
-                        alt=""
-                        fill
-                        sizes="96px"
-                        placeholder="blur"
-                        blurDataURL={p.coverPhoto.lqip}
-                        className="object-cover"
-                      />
+                      <MediaImage photo={{ src: `/media/${p.coverPhoto.storageKey}`, width: p.coverPhoto.width, height: p.coverPhoto.height, lqip: p.coverPhoto.lqip }} alt="" sizes="96px" fill className="object-cover" />
                     )}
                   </div>
                   <div className="min-w-0 flex-1">

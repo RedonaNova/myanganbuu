@@ -1,10 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { projectPage as t } from "@/messages/mn";
 
 /** Native share sheet on phones (Messenger, Viber, Facebook), copy elsewhere. */
-export function ShareButton({ title, className = "" }: { title: string; className?: string }) {
+export function ShareButton({
+  title,
+  labels: t,
+  className = "",
+}: {
+  title: string;
+  labels: { share: string; copied: string };
+  className?: string;
+}) {
   const [copied, setCopied] = useState(false);
 
   async function share() {

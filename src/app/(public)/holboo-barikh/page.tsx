@@ -3,7 +3,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { InquiryForm } from "./inquiry-form";
 import { getSettings, messengerLink, viberLink } from "@/lib/settings";
-import { footer, inquiry as t } from "@/messages/mn";
+import { contactMethods, districts, footer, inquiry as t, rooms, serviceNames } from "@/messages/mn";
 
 export const metadata: Metadata = {
   title: t.title,
@@ -40,7 +40,7 @@ async function Form({ searchParams }: Pick<PageProps<"/holboo-barikh">, "searchP
   const startedAt = await requestTime();
   const sp = await searchParams;
   const error = typeof sp.error === "string" && sp.error in t.errors ? (sp.error as keyof typeof t.errors) : undefined;
-  return <InquiryForm startedAt={startedAt} initialError={error} />;
+  return <InquiryForm startedAt={startedAt} initialError={error} copy={{ t, rooms, serviceNames, contactMethods, districts }} />;
 }
 
 async function DirectContact() {
