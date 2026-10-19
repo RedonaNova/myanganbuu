@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+/* ─── Design tokens ──────────────────────────────────────────────────────
+   Warm paper, near-black ink, one fired-clay accent. Every text pair below
+   is checked for WCAG AA in tests/contrast.test.ts. */
+:root {
+  color-scheme: light;
+  --bg: #f5f2ec;
+  --surface: #fbf9f5;
+  --surface-2: #ece7df;
+  --ink: #1a1714;
+  --ink-2: #5e574f;
+  --line: #ddd6cb;
+  --accent: #a8461f;
+  --accent-hover: #923b18;
+  --accent-ink: #fff8f2;
+  --accent-soft: #f1e0d6;
+  --danger: #a3261b;
+  --success: #2f6b3a;
+  --scrim: rgb(20 17 14 / 0.55);
+  --focus: #a8461f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #13110f;
+    --surface: #1c1916;
+    --surface-2: #26221e;
+    --ink: #eee8df;
+    --ink-2: #a79e92;
+    --line: #36312b;
+    --accent: #e0784a;
+    --accent-hover: #ea8a5f;
+    --accent-ink: #1a0f08;
+    --accent-soft: #3a2318;
+    --danger: #f08070;
+    --success: #7cc48a;
+    --scrim: rgb(0 0 0 / 0.6);
+    --focus: #e0784a;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #13110f;
+  --surface: #1c1916;
+  --surface-2: #26221e;
+  --ink: #eee8df;
+  --ink-2: #a79e92;
+  --line: #36312b;
+  --accent: #e0784a;
+  --accent-hover: #ea8a5f;
+  --accent-ink: #1a0f08;
+  --accent-soft: #3a2318;
+  --danger: #f08070;
+  --success: #7cc48a;
+  --scrim: rgb(0 0 0 / 0.6);
+  --focus: #e0784a;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-geologica), var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 1.75rem;
+  --radius-control: 0.875rem;
+
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ─── Base ─────────────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    font-family: var(--font-sans);
+    font-feature-settings: "kern", "liga";
+    min-height: 100dvh;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  /* One consistent, highly visible focus ring everywhere. */
+  :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
+    border-radius: 0.375rem;
+  }
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .container-page {
+    width: 100%;
+    max-width: 82rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 40rem) {
+    .container-page {
+      padding-inline: 2rem;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
