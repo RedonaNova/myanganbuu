@@ -1,0 +1,72 @@
+name: Deploy app
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      # PROD_SECRETS holds the full production .env. Base64 keeps the multi-line
+      # value intact through ssh-action's env export; the encoded form is masked.
+      - name: Encode .env
+        env:
+          PROD_SECRETS: ${{ secrets.PROD_SECRETS }}
+        run: |
+          if [ -z "$PROD_SECRETS" ]; then
+            echo "::error::PROD_SECRETS is empty"; exit 1
+          fi
+          ENV_B64=$(printf '%s\n' "$PROD_SECRETS" | base64 -w0)
+          echo "::add-mask::$ENV_B64"
+          echo "ENV_B64=$ENV_B64" >> "$GITHUB_ENV"
+
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        env:
+          ENV_B64: ${{ env.ENV_B64 }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: 22
+          envs: ENV_B64
+          command_timeout: 15m
+          script: |
+            set -euo pipefail
+            cd /home/cloudmn/apps/myanganbuu
+
+            git status --porcelain
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Write .env from PROD_SECRETS (owner-only permissions).
+            umask 077
+            printf '%s' "$ENV_B64" | base64 -d > .env.tmp
+
+            mv .env.tmp .env
+            umask 022
+
+            # Node from nvm when present (non-interactive shells skip .bashrc).
+            export NVM_DIR="$HOME/.nvm"
+            if [ -s "$NVM_DIR/nvm.sh" ]; then . "$NVM_DIR/nvm.sh"; fi
+
+            # Uploaded photos live outside the checkout so git reset never touches them.
+            UPLOAD_DIR=$(grep -E '^UPLOAD_DIR=' .env | cut -d= -f2- | tr -d '"' || true)
+            mkdir -p "${UPLOAD_DIR:-/home/cloudmn/apps/myanganbuu-data/uploads}"
+
+            npm ci --no-audit --no-fund
+            npx prisma migrate deploy
+            NODE_OPTIONS=--max-old-space-size=1536 npm run build
+
+            pm2 startOrReload ecosystem.config.cjs --update-env
+            pm2 save
