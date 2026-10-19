@@ -5,7 +5,7 @@
 import { gzipSync } from "node:zlib";
 
 const base = process.argv[2] ?? "http://localhost:4000";
-const pages = ["/", "/tusul", "/tusul/bayanzurkh-ugaalgyn-oroo", "/uilchilgee/tiling", "/holboo-barikh", "/uzuulekh"];
+const pages = ["/", "/tusul", "/tusul/khausny-fasad-tagt", "/uilchilgee/tiling", "/holboo-barikh", "/uzuulekh"];
 const BUDGET_KB = 150;
 const kb = (bytes) => (bytes / 1024).toFixed(1);
 let failed = false;

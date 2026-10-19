@@ -22,6 +22,8 @@ export type ProjectCard = {
 
 const cardInclude = {
   coverPhoto: true,
+  // Fallback when no cover is set.
+  photos: { orderBy: { sortOrder: "asc" }, take: 1 },
   heroPair: { include: { pairedAfter: true } },
   services: true,
   _count: { select: { photos: true } },
@@ -40,7 +42,7 @@ async function fetchCards(where: object, take?: number) {
 
 function toCard(p: CardRow): ProjectCard {
   // Prefer the finished result: the main pair's AFTER, else the cover.
-  const coverRow = p.heroPair?.pairedAfter ?? p.coverPhoto;
+  const coverRow = p.heroPair?.pairedAfter ?? p.coverPhoto ?? p.photos[0];
   return {
     slug: p.slug,
     title: p.title,

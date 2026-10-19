@@ -1,7 +1,9 @@
-// Demo content so the site looks complete before real work is uploaded.
+// Initial content: his real projects (photos in prisma/seed-images), a
+// starter rate card and a sample quote.
 //   npm run db:seed
-// Safe to re-run: sample projects (isSample) and the sample quote are
-// replaced; the rate card is only filled when it is empty.
+// Safe to re-run: existing projects are never touched, the rate card is only
+// filled when empty, and only the sample quote is replaced. Old stock-photo
+// demo projects (isSample) are removed.
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { randomBytes } from "node:crypto";
@@ -25,101 +27,112 @@ type SeedProject = {
   title: string;
   description: string;
   room: "KITCHEN" | "BATHROOM" | "LIVING" | "BEDROOM" | "FACADE";
-  district: string;
-  areaM2: number;
-  durationDays: number;
-  completedAt: string;
   services: string[];
+  featured: boolean;
   pairs: { before: SeedPhoto; after: SeedPhoto }[];
   photos: SeedPhoto[];
 };
 
 const projects: SeedProject[] = [
   {
-    slug: "bayanzurkh-ugaalgyn-oroo",
-    title: "Баянзүрх, 2 өрөө байрны угаалгын өрөөг бүрэн шинэчилсэн",
+    slug: "khausny-fasad-tagt",
+    title: "Хаусны фасадыг шинэчилж, том тагт хийсэн",
     description:
-      "Хуучин хавтанг бүрэн хуулж, ханыг тэгшилж, ус тусгаарлагч түрхсэн. Ваннын байрлалыг өөрчилж, угаалтуур болон бохирын шугамыг шинэ байршилд шилжүүлсэн.\n\n" +
-      "Хананд 30×60 хэмжээтэй цагаан хавтан, шалан дээр гулгахгүй хавтан тавьсан. Толины ард гэрэл, ус нэвтрэхгүй залгуур нэмж суурилуулсан.\n\n" +
-      "Материалыг захиалагч өөрөө сонгож авсан. Ажлыг 12 хоногт хүлээлгэн өгсөн.",
-    room: "BATHROOM",
-    district: "Баянзүрх",
-    areaM2: 52,
-    durationDays: 12,
-    completedAt: "2026-08-14",
-    services: ["tiling", "plumbing", "electrical"],
-    pairs: [
-      {
-        before: { file: "bath_old.jpg", alt: "Угаалгын өрөө засварын өмнө: хуучин хавтан, ванн" },
-        after: { file: "bath_a4.jpg", alt: "Угаалгын өрөө засварын дараа: цагаан хавтан, шинэ угаалтуур, шүүгээ" },
-      },
-      {
-        before: { file: "b_shower.jpg", alt: "Шүршүүрийн булан засварын өмнө" },
-        after: { file: "bath_a3.jpg", alt: "Шүршүүрийн булан засварын дараа: цагаан хавтан, шинэ холигч" },
-      },
-    ],
-    photos: [{ file: "bath_a1.jpg", alt: "Шинэ угаалгын өрөөний ерөнхий байдал" }],
-  },
-  {
-    slug: "khan-uul-zochny-oroo-gal-togoo",
-    title: "Хан-Уул, 3 өрөө байрны зочны өрөө ба гал тогоо",
-    description:
-      "Зочны өрөөний ханыг хана панелаар өнгөлж, телевизийн тавиурыг захиалгаар хийж суурилуулсан. Таазыг суналтын тааз болгож, цэгэн гэрлүүдийг шинээр татсан.\n\n" +
-      "Гал тогоонд шалыг ламинатаар сольж, шүүгээг шинэчилсэн. Залгуурын тоог нэмж, бичил долгионы зуухны цахилгааныг тусад нь гаргасан.",
-    room: "LIVING",
-    district: "Хан-Уул",
-    areaM2: 78,
-    durationDays: 18,
-    completedAt: "2026-06-20",
-    services: ["panels", "furniture", "stretch-ceiling", "flooring", "electrical"],
-    pairs: [
-      {
-        before: { file: "l_common.jpg", alt: "Зочны өрөө засварын өмнө: хуучин хивс, буйдан" },
-        after: { file: "l_plants.jpg", alt: "Зочны өрөө засварын дараа: шинэ шал, гэрэлтүүлэг, тавиур" },
-      },
-      {
-        before: { file: "k_floor.jpg", alt: "Гал тогоо засварын явцад: тоосгон хана, шинэ шал" },
-        after: { file: "k_cab.jpg", alt: "Гал тогоо засварын дараа: цагаан шүүгээ, шинэ зуух" },
-      },
-    ],
-    photos: [
-      {
-        file: "k_tools.jpg",
-        alt: "Гал тогооны шүүгээ суурилуулах явц",
-        role: "PROGRESS",
-        caption: "Гал тогооны шүүгээг суурилуулж, ажлын тавцанг тавьсан.",
-        date: "2026-06-12",
-      },
-      {
-        file: "ceiling.jpg",
-        alt: "Суналтын тааз, гэрлийн цэг",
-        role: "PROGRESS",
-        caption: "Суналтын таазыг татаж, гэрлийн цэгүүдийг гаргасан.",
-        date: "2026-06-16",
-      },
-    ],
-  },
-  {
-    slug: "songinokhairkhan-khaus-saiding",
-    title: "Сонгинохайрхан, хувийн хаусны гадна фасадыг сайдингаар бүрсэн",
-    description:
-      "Хуучирч, хагарсан гадна бүрээсийг авч, модон каркасыг шинэчилсэн. Дулаалгын хавтан тавьж, дээрээс нь цайвар өнгийн винил сайдингаар бүрсэн.\n\n" +
-      "Цонхны хүрээ, булангийн хэсгүүдийг тусгай хамгаалалтын профайлаар хийсэн тул бороо, цасанд тэсвэртэй. Ажлыг зуны улиралд 9 хоногт дуусгасан.",
+      "Хуучин тоосгон ханыг каркас, дулаалгатай болгож, дээрээс нь цайвар өнгийн фасадын хавтангаар бүрсэн. Цонхны хүрээ, дээврийн ирмэгийг хар өнгийн профайлаар хүрээлсэн.\n\n" +
+      "Хаалганы урд баганатай халхавч гаргаж, байшингийн урд талд том тагт, шат, төмөр хашлага хийсэн.",
     room: "FACADE",
-    district: "Сонгинохайрхан",
-    areaM2: 140,
-    durationDays: 9,
-    completedAt: "2025-08-30",
     services: ["siding"],
+    featured: true,
     pairs: [
       {
-        before: { file: "s_multi.jpg", alt: "Хаусны фасад засварын өмнө: хагарсан хуучин бүрээс" },
-        after: { file: "s_vinyl.jpg", alt: "Хаусны фасад засварын дараа: цайвар винил сайдинг" },
+        before: { file: "siding-before.jpg", alt: "Хаус засварын өмнө: хуучин тоосгон хана, улаан дээвэр, барилгын шат" },
+        after: { file: "siding-after.jpg", alt: "Хаус засварын дараа: цайвар фасадын хавтан, хар дээвэр, тагт, хашлага" },
       },
     ],
+    photos: [],
+  },
+  {
+    slug: "living-room-tv-khana",
+    title: "Зочны өрөөний телевизийн хана, захиалгат тавиур",
+    description:
+      "Телевизийн ханыг гантиг хээтэй хавтан, босоо хана панелаар өнгөлж, панелийн ард LED гэрэлтүүлэг оруулсан. Доор нь өрөөнд тааруулж хийсэн өлгөөтэй тавиур суурилуулсан.\n\n" +
+      "Хананы хоёр талд ханын гэрэл гаргаж, утсыг бүгдийг нь хананд нуусан.",
+    room: "LIVING",
+    services: ["panels", "furniture", "electrical"],
+    featured: true,
+    pairs: [],
+    photos: [{ file: "stenk-selfmade.jpg", alt: "Зочны өрөө: гантиг хээтэй ТВ хана, босоо панел, LED гэрэл, өлгөөтэй тавиур" }],
+  },
+  {
+    slug: "shurshuurtei-ugaalgyn-oroo",
+    title: "Шүршүүртэй угаалгын өрөө: шугам, хавтан",
+    description:
+      "Шалыг хуулж, усны болон бохирын шугамыг шинээр татсан. Шүршүүрийн хэсэгт ус зайлуулах налуу гаргаж, шалыг хавтангаар тавьсан.\n\n" +
+      "Хананд гантиг хээтэй цагаан хавтан, шүршүүрийн холигч суурилуулсан.",
+    room: "BATHROOM",
+    services: ["plumbing", "tiling"],
+    featured: true,
+    pairs: [
+      {
+        before: { file: "bathroom-before.jpg", alt: "Угаалгын өрөө ажлын явцад: шалан дээр шинэ ус, бохирын шугам" },
+        after: { file: "bathroom-after.jpg", alt: "Угаалгын өрөө дууссаны дараа: шүршүүр, хавтантай шал, хана" },
+      },
+    ],
+    photos: [],
+  },
+  {
+    slug: "mansardtai-khaus-saiding",
+    title: "Мансардтай хаусыг цагаан сайдингаар бүрсэн",
+    description:
+      "Хоёр давхар хаусны гадна ханыг бүхэлд нь цагаан сайдингаар бүрж, булан, цонхны хүрээг бараан профайлаар гаргасан.",
+    room: "FACADE",
+    services: ["siding"],
+    featured: true,
+    pairs: [],
+    photos: [{ file: "siding-photo.jpg", alt: "Цагаан сайдингаар бүрсэн мансардтай хаус" }],
+  },
+  {
+    slug: "tom-tsonkhtoi-khaus-fasad",
+    title: "Том цонхтой хаусны фасад",
+    description: "Мансардтай хаусны гадна ханыг цагаан сайдингаар бүрж байх үе. Ажлыг шат, тавцан босгож, аюулгүй хийдэг.",
+    room: "FACADE",
+    services: ["siding"],
+    featured: false,
+    pairs: [],
+    photos: [{ file: "in-progress-siding.jpg", alt: "Том цонхтой хаус, цагаан сайдинг бүрж буй үе, барилгын шат" }],
+  },
+  {
+    slug: "neg-davkhar-baishin-fasad",
+    title: "Нэг давхар байшинг фасадын хавтангаар бүрсэн",
+    description: "Нэг давхар байшинг тоосгон хээтэй цагаан фасадын хавтангаар бүрж, суурийг бараан өнгөөр ялгасан.",
+    room: "FACADE",
+    services: ["siding"],
+    featured: false,
+    pairs: [],
+    photos: [{ file: "siding-photo1.jpg", alt: "Цагаан фасадын хавтангаар бүрсэн нэг давхар байшин" }],
+  },
+  {
+    slug: "ulaan-deevertei-baishin",
+    title: "Улаан дээвэртэй байшингийн фасад",
+    description: "Байшингийн ханыг цагаан сайдингаар бүрж, цонх бүрийг бараан өнгийн хүрээгээр ялгаж гаргасан.",
+    room: "FACADE",
+    services: ["siding"],
+    featured: false,
+    pairs: [],
+    photos: [{ file: "siding-photo2.jpg", alt: "Цагаан сайдинг, бараан цонхны хүрээтэй улаан дээвэртэй байшин" }],
+  },
+  {
+    slug: "khuvtsasny-shuugee",
+    title: "Унтлагын өрөөний суурилуулсан хувцасны шүүгээ",
+    description:
+      "Хананаас тааз хүртэл өндөр, өрөөнд яг таарсан хувцасны шүүгээ. Дотор нь өлгүүр, тавиур, шургуулга хийсэн, гадна талд нарийн хар бариултай.",
+    room: "BEDROOM",
+    services: ["furniture"],
+    featured: false,
+    pairs: [],
     photos: [
-      { file: "s_log.jpg", alt: "Цагаан сайдингаар бүрсэн хаус, урд талаас" },
-      { file: "s_stone.jpg", alt: "Чулуун хээтэй сайдинг, цонхны хүрээ" },
+      { file: "selfmade-wardrobe.jpg", alt: "Таазаас шал хүртэл цагаан хувцасны шүүгээ, хар бариултай" },
+      { file: "selfmade-wardrobe1.jpg", alt: "Шүүгээний дотор тал: өлгүүр, тавиур, шургуулга" },
     ],
   },
 ];
@@ -163,20 +176,20 @@ async function seedProjects() {
   }
 
   for (const [i, s] of projects.entries()) {
+    // Never overwrite: once imported, these are his projects to edit.
+    if (await prisma.project.findUnique({ where: { slug: s.slug } })) {
+      console.log(`· ${s.title} already exists, left as is`);
+      continue;
+    }
     const project = await prisma.project.create({
       data: {
         slug: s.slug,
         title: s.title,
         description: s.description,
         room: s.room,
-        district: s.district,
-        areaM2: s.areaM2,
-        durationDays: s.durationDays,
-        completedAt: new Date(`${s.completedAt}T00:00:00Z`),
         published: true,
-        featured: true,
-        isSample: true,
-        sortOrder: 100 + i,
+        featured: s.featured,
+        sortOrder: i,
         services: { create: s.services.map((serviceSlug) => ({ serviceSlug })) },
       },
     });
@@ -191,10 +204,12 @@ async function seedProjects() {
     }
     for (const p of s.photos) await addPhoto(project.id, p, p.role ?? "GALLERY", order++);
 
+    // Cover: the main pair's AFTER photo, otherwise the first photo.
     const hero = heroPairId ? await prisma.photo.findUniqueOrThrow({ where: { id: heroPairId } }) : null;
+    const first = await prisma.photo.findFirst({ where: { projectId: project.id }, orderBy: { sortOrder: "asc" } });
     await prisma.project.update({
       where: { id: project.id },
-      data: { heroPairId, coverPhotoId: hero?.pairedAfterId ?? null },
+      data: { heroPairId, coverPhotoId: hero?.pairedAfterId ?? first?.id ?? null },
     });
     console.log(`✓ ${s.title} (${order} photos)`);
   }

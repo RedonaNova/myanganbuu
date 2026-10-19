@@ -45,3 +45,6 @@ next-env.d.ts
 /src/generated/
 !.env.example
 
+
+# raw photos from the owner (copies used by the seed live in prisma/seed-images)
+/reference/
