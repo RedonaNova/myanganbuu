@@ -91,7 +91,7 @@ function FilterRow({ label, items }: { label: string; items: { label: string; hr
   return (
     <nav aria-label={label}>
       {/* Bleeds to the screen edge on phones and scrolls sideways. */}
-      <ul className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0">
+      <ul className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 scrollbar-none sm:mx-0 sm:flex-wrap sm:px-0">
         {items.map((item) => (
           <li key={item.href} className="shrink-0">
             <Link

@@ -75,7 +75,7 @@ export function Gallery({ photos }: { photos: ClientPhoto[] }) {
       >
         <div
           ref={trackRef}
-          className="flex h-full snap-x snap-mandatory overflow-x-auto overscroll-contain [scrollbar-width:none]"
+          className="flex h-full snap-x snap-mandatory overflow-x-auto overscroll-contain scrollbar-none"
           onScroll={(e) => {
             const el = e.currentTarget;
             setIndex(Math.round(el.scrollLeft / el.clientWidth));
