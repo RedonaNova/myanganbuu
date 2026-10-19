@@ -1,4 +1,5 @@
-import "server-only";
+// Image pipeline core. No "server-only" guard so CLI scripts (the seed) can
+// reuse it; app code imports it through src/lib/images.ts.
 import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 import { randomBytes } from "node:crypto";

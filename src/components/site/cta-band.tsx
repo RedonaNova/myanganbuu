@@ -1,0 +1,32 @@
+import Link from "next/link";
+import { getSettings, messengerLink } from "@/lib/settings";
+import { footer, nav } from "@/messages/mn";
+
+/** Closing call to action: form first, Messenger second. Never a phone call. */
+export async function CtaBand({ title, body }: { title: string; body: string }) {
+  const settings = await getSettings();
+  return (
+    <section className="container-page mt-24">
+      <div className="relative overflow-hidden rounded-card bg-ink px-6 py-12 text-bg md:px-14 md:py-16">
+        <div aria-hidden="true" className="absolute -top-24 -right-24 size-72 rounded-full bg-accent/30 blur-3xl" />
+        <h2 className="relative max-w-2xl text-3xl leading-tight font-bold md:text-5xl">{title}</h2>
+        <p className="relative mt-4 max-w-xl text-lg text-bg/75">{body}</p>
+        <div className="relative mt-8 flex flex-col gap-3 sm:flex-row">
+          <Link
+            href="/holboo-barikh"
+            className="inline-flex min-h-14 items-center justify-center rounded-full bg-accent px-7 text-lg font-semibold text-accent-ink transition-colors duration-150 hover:bg-accent-hover"
+          >
+            {nav.cta}
+          </Link>
+          <a
+            href={messengerLink(settings)}
+            rel="noopener"
+            className="inline-flex min-h-14 items-center justify-center rounded-full border border-bg/25 px-7 text-lg font-semibold transition-colors duration-150 hover:border-bg/60"
+          >
+            {footer.messenger}
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
