@@ -8,6 +8,7 @@ import { MediaImage } from "@/components/media-image";
 import { ProjectCard } from "@/components/site/project-card";
 import { ServiceShowcase } from "@/components/site/service-showcase";
 import { ContactButtons, ContactDetails } from "@/components/site/contact";
+import { IconMessage } from "@/components/icons";
 import { services } from "@/content/services";
 import { about, footer, home as t, nav, projectPage, serviceNames, site } from "@/messages/mn";
 
@@ -26,18 +27,23 @@ export default async function Home() {
   return (
     <>
       {/* Hero: name, one line, CTA, and one real before/after. */}
-      <section className="container-page pt-8 md:pt-14">
-        <div className="lg:grid lg:grid-cols-12 lg:items-end lg:gap-12">
-          <div className="lg:col-span-7">
-            <h1 className="text-[3.25rem] leading-[0.95] font-extrabold tracking-[-0.035em] sm:text-7xl lg:text-[5.75rem] lg:leading-[0.9] xl:text-[7.25rem]">
-              {site.name}
-            </h1>
-          </div>
-          <div className="lg:col-span-5 lg:pb-2">
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-2 md:text-xl lg:mt-0">{t.lead}</p>
+      <section className="container-page pt-8 md:pt-12">
+        <h1 className="text-[3.25rem] leading-[0.95] font-extrabold tracking-[-0.035em] sm:text-7xl lg:text-[6.5rem] lg:leading-[0.9] xl:text-[8rem]">
+          {site.name}
+        </h1>
+        <div className="mt-5 lg:mt-8 lg:grid lg:grid-cols-12 lg:items-end lg:gap-12">
+          <p className="max-w-2xl text-lg leading-relaxed text-ink-2 md:text-xl lg:col-span-7">{t.lead}</p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row lg:col-span-5 lg:mt-0 lg:justify-end">
+            <Link
+              href="/holboo-barikh"
+              className="inline-flex min-h-14 items-center justify-center gap-2.5 rounded-full bg-accent px-7 text-lg font-semibold whitespace-nowrap text-accent-ink transition-[background-color,transform] duration-150 hover:bg-accent-hover active:scale-[0.98]"
+            >
+              <IconMessage size={22} />
+              {nav.cta}
+            </Link>
             <Link
               href="/ajluud"
-              className="mt-8 inline-flex min-h-14 items-center justify-center rounded-full border border-line px-7 text-lg font-semibold transition-colors duration-150 hover:border-ink-2"
+              className="inline-flex min-h-14 items-center justify-center rounded-full border border-line px-7 text-lg font-semibold whitespace-nowrap transition-colors duration-150 hover:border-ink-2"
             >
               {t.secondaryCta}
             </Link>

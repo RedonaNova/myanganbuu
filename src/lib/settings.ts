@@ -12,11 +12,6 @@ export const SETTING_DEFAULTS = {
   heroProjectId: "",
   // Comma-separated project ids, in display order (max 4).
   featuredProjectIds: "",
-  // Contact details shown on the site (all optional). Phone is for text
-  // messages only: he does not take calls.
-  phone: "",
-  email: "",
-  serviceArea: "",
   aboutHeadline: "",
   aboutBio: "",
   // JSON list of { value, label }, e.g. [{"value":"15","label":"жил туршлага"}].
@@ -72,10 +67,4 @@ export function aboutStats(s: Settings): AboutStat[] {
   } catch {
     return [];
   }
-}
-
-/** sms: link for texting him from a phone. */
-export function smsLink(s: Settings) {
-  const digits = s.phone.replace(/[^\d+]/g, "");
-  return digits ? `sms:${digits}` : null;
 }

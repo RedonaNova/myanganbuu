@@ -1,4 +1,4 @@
-import { messengerLink, smsLink, viberLink, type Settings } from "@/lib/settings";
+import { messengerLink, viberLink, type Settings } from "@/lib/settings";
 import { contact as t } from "@/messages/mn";
 
 // Brand colours, darkened where needed so white text passes WCAG AA.
@@ -57,62 +57,29 @@ export function ContactButtons({ settings, className = "" }: { settings: Setting
   );
 }
 
-/** Whatever contact details he has filled in, as a definition list. */
+/** Facebook and Viber, the two ways he is reached. */
 export function ContactDetails({ settings, tone = "light" }: { settings: Settings; tone?: "light" | "dark" }) {
   const muted = tone === "dark" ? "text-bg/65" : "text-ink-2";
-  const link = "underline-offset-4 hover:underline";
   const handle = settings.facebookUrl.replace(/^https?:\/\/(www\.)?/, "").replace(/\/+$/, "");
-  const sms = smsLink(settings);
-  const rows: { label: string; value: React.ReactNode }[] = [];
-  if (settings.facebookUrl) {
-    rows.push({
-      label: t.facebook,
-      value: (
-        <a href={settings.facebookUrl} rel="noopener" className={link}>
-          {handle}
-        </a>
-      ),
-    });
-  }
-  if (settings.viberNumber) rows.push({ label: t.viber, value: <span className="tabular">{settings.viberNumber}</span> });
-  if (settings.phone) {
-    rows.push({
-      label: t.phone,
-      value: (
-        <>
-          {sms ? (
-            <a href={sms} className={`tabular ${link}`}>
-              {settings.phone}
-            </a>
-          ) : (
-            settings.phone
-          )}
-          <span className={`block text-sm font-normal ${muted}`}>{t.phoneNote}</span>
-        </>
-      ),
-    });
-  }
-  if (settings.email) {
-    rows.push({
-      label: t.email,
-      value: (
-        <a href={`mailto:${settings.email}`} className={`break-all ${link}`}>
-          {settings.email}
-        </a>
-      ),
-    });
-  }
-  if (settings.serviceArea) rows.push({ label: t.area, value: settings.serviceArea });
-
-  if (!rows.length) return null;
+  if (!settings.facebookUrl && !settings.viberNumber) return null;
   return (
-    <dl className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
-      {rows.map((r) => (
-        <div key={r.label}>
-          <dt className={`text-sm font-semibold ${muted}`}>{r.label}</dt>
-          <dd className="mt-1 text-lg font-semibold">{r.value}</dd>
+    <dl className="space-y-4">
+      {settings.facebookUrl && (
+        <div>
+          <dt className={`text-sm font-semibold ${muted}`}>{t.facebook}</dt>
+          <dd className="mt-1 text-lg font-semibold wrap-break-word">
+            <a href={settings.facebookUrl} rel="noopener" className="underline-offset-4 hover:underline">
+              {handle}
+            </a>
+          </dd>
         </div>
-      ))}
+      )}
+      {settings.viberNumber && (
+        <div>
+          <dt className={`text-sm font-semibold ${muted}`}>{t.viber}</dt>
+          <dd className="tabular mt-1 text-lg font-semibold">{settings.viberNumber}</dd>
+        </div>
+      )}
     </dl>
   );
 }

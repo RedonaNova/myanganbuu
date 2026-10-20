@@ -19,7 +19,7 @@ export async function SiteFooter() {
         <div>
           <p className="font-display text-3xl font-bold tracking-tight">{site.name}</p>
           <p className="mt-3 max-w-sm text-lg text-ink-2">{site.tagline}</p>
-          <p className="mt-6 text-base text-ink-2">{settings.serviceArea || t.area}</p>
+          <p className="mt-6 text-base text-ink-2">{t.area}</p>
         </div>
 
         <div>

@@ -7,7 +7,7 @@ import { IconCheck } from "@/components/icons";
 import { adminSettings as t, common } from "@/messages/mn";
 
 type Props = {
-  settings: { facebookUrl: string; messengerUrl: string; viberNumber: string; phone: string; email: string; serviceArea: string };
+  settings: { facebookUrl: string; messengerUrl: string; viberNumber: string };
 };
 
 export function SettingsForm({ settings }: Props) {
@@ -34,26 +34,6 @@ export function SettingsForm({ settings }: Props) {
         </label>
         <input id="viberNumber" name="viberNumber" type="tel" inputMode="tel" defaultValue={settings.viberNumber} className={`${fieldClass} tabular`} />
         <p className="mt-2 text-base text-ink-2">{t.viberHint}</p>
-      </div>
-      <div>
-        <label htmlFor="phone" className={labelClass}>
-          {t.phone}
-        </label>
-        <input id="phone" name="phone" type="tel" inputMode="tel" defaultValue={settings.phone} className={`${fieldClass} tabular`} />
-        <p className="mt-2 text-base text-ink-2">{t.phoneHint}</p>
-      </div>
-      <div>
-        <label htmlFor="email" className={labelClass}>
-          {t.email}
-        </label>
-        <input id="email" name="email" type="email" inputMode="email" defaultValue={settings.email} className={fieldClass} />
-      </div>
-      <div>
-        <label htmlFor="serviceArea" className={labelClass}>
-          {t.serviceArea}
-        </label>
-        <input id="serviceArea" name="serviceArea" defaultValue={settings.serviceArea} maxLength={120} className={fieldClass} />
-        <p className="mt-2 text-base text-ink-2">{t.serviceAreaHint}</p>
       </div>
 
       <div className="flex items-center gap-3">

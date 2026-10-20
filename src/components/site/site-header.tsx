@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { IconMessage } from "@/components/icons";
 import { nav, site } from "@/messages/mn";
 
 const links = [
@@ -33,10 +34,11 @@ export function SiteHeader() {
 
         <Link
           href="/holboo-barikh"
-          className="inline-flex min-h-11 items-center rounded-full bg-ink px-4 text-base font-semibold whitespace-nowrap text-bg transition-transform duration-150 active:scale-[0.97] md:px-5"
+          className="ml-1 inline-flex min-h-11 items-center gap-2 rounded-full bg-accent px-4 text-base font-semibold whitespace-nowrap text-accent-ink transition-[background-color,transform] duration-150 hover:bg-accent-hover active:scale-[0.97] md:px-5"
         >
+          <IconMessage size={18} />
           <span className="lg:hidden">{nav.ctaShort}</span>
-          <span className="hidden lg:inline">{nav.cta}</span>
+          <span className="max-lg:hidden">{nav.cta}</span>
         </Link>
 
         <details className="group relative md:hidden">

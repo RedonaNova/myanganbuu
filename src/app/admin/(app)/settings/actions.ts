@@ -21,17 +21,11 @@ export async function saveSettings(_prev: SettingsState, formData: FormData): Pr
       facebookUrl: url,
       messengerUrl: url,
       viberNumber: z.string().trim().max(20),
-      phone: z.string().trim().max(20),
-      email: z.union([z.literal(""), z.email().max(120)]),
-      serviceArea: z.string().trim().max(120),
     })
     .safeParse({
       facebookUrl: String(formData.get("facebookUrl") ?? "").trim(),
       messengerUrl: String(formData.get("messengerUrl") ?? "").trim(),
       viberNumber: String(formData.get("viberNumber") ?? "").replace(/[^\d+]/g, ""),
-      phone: String(formData.get("phone") ?? "").replace(/[^\d+ ]/g, "").trim(),
-      email: String(formData.get("email") ?? "").trim(),
-      serviceArea: String(formData.get("serviceArea") ?? "").trim(),
     });
   if (!parsed.success) return { error: "invalid" };
   for (const [key, value] of Object.entries(parsed.data)) await putSetting(key as SettingKey, value);
