@@ -1,62 +1,62 @@
 @import "tailwindcss";
 
 /* ─── Design tokens ──────────────────────────────────────────────────────
-   Warm paper, near-black ink, one fired-clay accent. Every text pair below
+   Paper, ink, and one spruce green taken from his countryside jobs (pines, green roofs). Every text pair below
    is checked for WCAG AA in tests/contrast.test.ts. */
 :root {
   color-scheme: light;
-  --bg: #f5f2ec;
-  --surface: #fbf9f5;
-  --surface-2: #ece7df;
-  --ink: #1a1714;
-  --ink-2: #5e574f;
-  --line: #ddd6cb;
-  --accent: #a8461f;
-  --accent-hover: #923b18;
-  --accent-ink: #fff8f2;
-  --accent-soft: #f1e0d6;
+  --bg: #f3f2ee;
+  --surface: #fafaf7;
+  --surface-2: #e8e6e0;
+  --ink: #191a17;
+  --ink-2: #5a5a54;
+  --line: #d9d7cf;
+  --accent: #2c5a46;
+  --accent-hover: #23493a;
+  --accent-ink: #f3f8f4;
+  --accent-soft: #dde8e1;
   --danger: #a3261b;
   --success: #2f6b3a;
-  --scrim: rgb(20 17 14 / 0.55);
-  --focus: #a8461f;
+  --scrim: rgb(18 20 17 / 0.55);
+  --focus: #2c5a46;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #13110f;
-    --surface: #1c1916;
-    --surface-2: #26221e;
-    --ink: #eee8df;
-    --ink-2: #a79e92;
-    --line: #36312b;
-    --accent: #e0784a;
-    --accent-hover: #ea8a5f;
-    --accent-ink: #1a0f08;
-    --accent-soft: #3a2318;
+    --bg: #121412;
+    --surface: #1a1d1a;
+    --surface-2: #242824;
+    --ink: #ecede8;
+    --ink-2: #a3a59d;
+    --line: #333832;
+    --accent: #8cc5a5;
+    --accent-hover: #a3d3b7;
+    --accent-ink: #0d1a13;
+    --accent-soft: #1f2f26;
     --danger: #f08070;
     --success: #7cc48a;
     --scrim: rgb(0 0 0 / 0.6);
-    --focus: #e0784a;
+    --focus: #8cc5a5;
   }
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #13110f;
-  --surface: #1c1916;
-  --surface-2: #26221e;
-  --ink: #eee8df;
-  --ink-2: #a79e92;
-  --line: #36312b;
-  --accent: #e0784a;
-  --accent-hover: #ea8a5f;
-  --accent-ink: #1a0f08;
-  --accent-soft: #3a2318;
+  --bg: #121412;
+  --surface: #1a1d1a;
+  --surface-2: #242824;
+  --ink: #ecede8;
+  --ink-2: #a3a59d;
+  --line: #333832;
+  --accent: #8cc5a5;
+  --accent-hover: #a3d3b7;
+  --accent-ink: #0d1a13;
+  --accent-soft: #1f2f26;
   --danger: #f08070;
   --success: #7cc48a;
   --scrim: rgb(0 0 0 / 0.6);
-  --focus: #e0784a;
+  --focus: #8cc5a5;
 }
 
 @theme inline {
@@ -199,10 +199,8 @@
   top: 0.875rem;
   padding: 0.3rem 0.75rem;
   border-radius: 999px;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
   pointer-events: none;
   backdrop-filter: blur(6px);
   transition: opacity 200ms var(--ease-out);

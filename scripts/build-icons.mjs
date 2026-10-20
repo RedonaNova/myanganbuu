@@ -8,8 +8,8 @@ import sharp from "sharp";
 const font = fontkit.openSync("assets/fonts/Geologica-700.ttf");
 const glyph = font.glyphsForString("М")[0];
 const { minX, minY, maxX, maxY } = glyph.bbox;
-const ACCENT = "#a8461f";
-const PAPER = "#f5f2ec";
+const ACCENT = "#2c5a46";
+const PAPER = "#f3f2ee";
 
 /** SVG of the letter centered in a square of `size`, letter height `scale` × size. */
 function svg({ size, bg, fg, scale, radius = 0 }) {

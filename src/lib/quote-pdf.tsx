@@ -22,10 +22,10 @@ Font.register({ family: "Geologica", src: path.join(fontDir, "Geologica-700.ttf"
 // Never hyphenate Mongolian words.
 Font.registerHyphenationCallback((word) => [word]);
 
-const ink = "#1a1714";
+const ink = "#191a17";
 const muted = "#5e574f";
 const line = "#ddd6cb";
-const accent = "#a8461f";
+const accent = "#2c5a46";
 
 const s = StyleSheet.create({
   page: { fontFamily: "Manrope", fontSize: 10.5, color: ink, paddingTop: 48, paddingBottom: 56, paddingHorizontal: 48 },
@@ -41,7 +41,7 @@ const s = StyleSheet.create({
   cQty: { width: 70, textAlign: "right" },
   cPrice: { width: 80, textAlign: "right" },
   cSum: { width: 90, textAlign: "right" },
-  totalRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 14, padding: 14, backgroundColor: ink, color: "#f5f2ec", borderRadius: 6 },
+  totalRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 14, padding: 14, backgroundColor: ink, color: "#f3f2ee", borderRadius: 6 },
   total: { fontFamily: "Geologica", fontSize: 18 },
   notes: { marginTop: 18, lineHeight: 1.5 },
   note: { marginTop: 10, padding: 10, backgroundColor: "#ece7df", borderRadius: 6 },
