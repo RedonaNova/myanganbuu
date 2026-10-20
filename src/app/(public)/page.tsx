@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SERVICE_SLUGS } from "@/lib/catalog";
 import { getAbout, getFeaturedCards, getHeroPair, getServiceShowcase } from "@/lib/queries";
-import { getSettings } from "@/lib/settings";
+import { getSettings, instagramLink } from "@/lib/settings";
 import { sliderLabels } from "@/lib/labels";
 import { BeforeAfter } from "@/components/before-after";
 import { MediaImage } from "@/components/media-image";
@@ -182,7 +182,7 @@ export default async function Home() {
             image: hero ? `${siteUrl}${hero.pair.after.src}/1200.jpg` : undefined,
             areaServed: { "@type": "City", name: site.city },
             address: { "@type": "PostalAddress", addressLocality: site.city, addressCountry: "MN" },
-            sameAs: [settings.facebookUrl],
+            sameAs: [settings.facebookUrl, instagramLink(settings)].filter(Boolean),
             knowsLanguage: "mn",
             hasOfferCatalog: {
               "@type": "OfferCatalog",

@@ -22,7 +22,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="mn" className={`${geologica.variable} ${manrope.variable}`} suppressHydrationWarning>
+    <html lang="mn" translate="no" className={`${geologica.variable} ${manrope.variable}`} suppressHydrationWarning>
       <body className="bg-bg text-ink antialiased">{children}</body>
     </html>
   );

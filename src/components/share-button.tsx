@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { absoluteUrl } from "@/lib/origin";
 
 /** Native share sheet on phones (Messenger, Viber, Facebook), copy elsewhere. */
 export function ShareButton({
@@ -11,7 +12,7 @@ export function ShareButton({
   labelClassName = "",
 }: {
   title: string;
-  /** Defaults to the current page. */
+  /** A path or URL; defaults to the current page. */
   url?: string;
   labels: { share: string; copied: string };
   className?: string;
@@ -20,7 +21,7 @@ export function ShareButton({
   const [copied, setCopied] = useState(false);
 
   async function share() {
-    const target = url ?? location.href;
+    const target = url ? absoluteUrl(url) : location.href;
     if (navigator.share) {
       try {
         await navigator.share({ title, url: target });

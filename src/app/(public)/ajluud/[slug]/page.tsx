@@ -176,7 +176,7 @@ function ProjectHeader({ project }: { project: ProjectDetail }) {
         ))}
         <span className="ml-auto flex flex-wrap gap-1">
           <FacebookShare
-            url={`${process.env.SITE_URL ?? ""}/ajluud/${project.slug}`}
+            url={`/ajluud/${project.slug}`}
             label={t.shareFacebook}
             className="inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-base font-semibold text-ink-2 transition-colors duration-150 hover:text-ink"
           />

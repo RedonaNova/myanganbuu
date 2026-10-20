@@ -20,10 +20,12 @@ export async function saveSettings(_prev: SettingsState, formData: FormData): Pr
     .object({
       facebookUrl: url,
       viberNumber: z.string().trim().max(20),
+      instagram: z.string().trim().max(200),
     })
     .safeParse({
       facebookUrl: String(formData.get("facebookUrl") ?? "").trim(),
       viberNumber: String(formData.get("viberNumber") ?? "").replace(/[^\d+]/g, ""),
+      instagram: String(formData.get("instagram") ?? "").trim(),
     });
   if (!parsed.success) return { error: "invalid" };
   for (const [key, value] of Object.entries(parsed.data)) await putSetting(key as SettingKey, value);

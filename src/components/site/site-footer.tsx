@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { cacheLife, cacheTag } from "next/cache";
-import { getSettings, viberLink } from "@/lib/settings";
+import { getSettings, instagramLink, viberLink } from "@/lib/settings";
 import { SERVICE_SLUGS } from "@/lib/catalog";
-import { FacebookIcon, ViberIcon } from "@/components/site/contact";
+import { FacebookIcon, INSTAGRAM, InstagramIcon, ViberIcon } from "@/components/site/contact";
 import { contact, footer as t, nav, serviceNames, site } from "@/messages/mn";
 
 export async function SiteFooter() {
@@ -11,6 +11,7 @@ export async function SiteFooter() {
   cacheTag("settings");
   const settings = await getSettings();
   const viber = viberLink(settings);
+  const instagram = instagramLink(settings);
   const copyright = `© ${new Date().getFullYear()} ${site.name}. `;
 
   return (
@@ -41,6 +42,16 @@ export async function SiteFooter() {
                     <ViberIcon size={18} />
                   </span>
                   {contact.viber}
+                </a>
+              </li>
+            )}
+            {instagram && (
+              <li>
+                <a href={instagram} rel="noopener" className="inline-flex min-h-11 items-center gap-2.5 hover:text-accent">
+                  <span className="grid size-8 place-items-center rounded-full text-white" style={{ backgroundImage: INSTAGRAM }}>
+                    <InstagramIcon size={18} />
+                  </span>
+                  {contact.instagram}
                 </a>
               </li>
             )}

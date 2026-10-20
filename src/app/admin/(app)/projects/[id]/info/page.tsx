@@ -18,7 +18,6 @@ export default async function ProjectInfoPage({ params }: PageProps<"/admin/proj
       <PageHeader title={project.title} backHref="/admin/projects" />
       <ProjectTabs id={project.id} active="info" />
       <ProjectInfoForm
-        siteUrl={process.env.SITE_URL ?? ""}
         project={{
           id: project.id,
           slug: project.slug,

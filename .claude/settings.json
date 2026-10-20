@@ -1,0 +1,9 @@
+{
+  "enabledPlugins": {
+    "frontend-design@anthropic-plugin-directory": true,
+    "design@anthropic-plugin-directory": true,
+    "searchfit-seo@anthropic-plugin-directory": true,
+    "commit-commands@anthropic-plugin-directory": true,
+    "code-simplifier@anthropic-plugin-directory": true
+  }
+}

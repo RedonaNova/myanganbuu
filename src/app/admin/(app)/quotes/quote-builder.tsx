@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState, useTransition } from "react";
 import { deleteQuote, saveQuote } from "./actions";
+import { useOrigin } from "@/lib/origin";
 import { lineTotal, parseMoney, parseQty } from "@/lib/quote-math";
 import { money } from "@/lib/format";
 import type { Rate } from "./rates/rate-card";
@@ -52,7 +53,8 @@ export function QuoteBuilder({ initial, rates, siteUrl }: { initial: QuoteInitia
 
   const totals = useMemo(() => lines.map((l) => lineTotal(parseMoney(l.price), parseQty(l.qty))), [lines]);
   const total = totals.reduce((a, b) => a + b, 0);
-  const publicUrl = token ? `${siteUrl}/une/${token}` : "";
+  const origin = useOrigin(siteUrl);
+  const publicUrl = token ? `${origin}/une/${token}` : "";
 
   function touch() {
     setDirty(true);

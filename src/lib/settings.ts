@@ -7,6 +7,8 @@ export const SETTING_DEFAULTS = {
   facebookUrl: "https://www.facebook.com/mb.tseren.5",
   // International format without spaces, e.g. +97699112233.
   viberNumber: "",
+  // Instagram handle (@name) or profile URL; the button shows only when set.
+  instagram: "",
   heroProjectId: "",
   // Comma-separated project ids, in display order (max 4).
   featuredProjectIds: "",
@@ -29,6 +31,17 @@ export async function getSettings(): Promise<Settings> {
     if (row.key in values) values[row.key as SettingKey] = row.value;
   }
   return values;
+}
+
+export function instagramLink(s: Settings) {
+  const v = s.instagram.trim();
+  if (!v) return null;
+  if (/^https?:\/\//.test(v)) return v;
+  const handle = v
+    .replace(/^@/, "")
+    .replace(/^(www\.)?instagram\.com\//, "")
+    .replace(/\/+$/, "");
+  return handle ? `https://www.instagram.com/${handle}/` : null;
 }
 
 export function viberLink(s: Settings) {

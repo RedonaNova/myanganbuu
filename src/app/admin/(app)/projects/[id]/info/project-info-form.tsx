@@ -28,7 +28,7 @@ type Project = {
   featured: boolean;
 };
 
-export function ProjectInfoForm({ project, siteUrl }: { project: Project; siteUrl: string }) {
+export function ProjectInfoForm({ project }: { project: Project }) {
   const [state, action, pending] = useActionState<FormState, FormData>(updateProject.bind(null, project.id), {});
   const [deleting, startDelete] = useTransition();
 
@@ -132,7 +132,7 @@ export function ProjectInfoForm({ project, siteUrl }: { project: Project; siteUr
             {admin.projects.viewPublic}
           </Link>
           <FacebookShare
-            url={`${siteUrl}/ajluud/${project.slug}`}
+            url={`/ajluud/${project.slug}`}
             label={projectPage.shareFacebook}
             className="inline-flex min-h-12 items-center gap-2 rounded-full border border-line px-5 text-lg font-semibold"
           />

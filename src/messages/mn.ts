@@ -62,7 +62,7 @@ export const districts = [
 
 // Short names; full service pages are in `servicePages` below.
 export const serviceNames = {
-  siding: "Гадна фасад, сайдинг",
+  siding: "Гадна фасад, сайдинг, террас",
   renovation: "Бүтэн засал",
   bathroom: "Угаалгын өрөө, сантехник",
   "tv-wall": "Стенк, ТВ хана",
@@ -239,8 +239,9 @@ export const footer = {
 export const contact = {
   facebook: "Фэйсбүүк",
   viber: "Вайбер",
+  instagram: "Инстаграм",
   dialogTitle: "Холбогдох",
-  dialogBody: "Фэйсбүүк эсвэл Вайбераар бичээрэй. Бичсэн зурвас бүрт хариулна.",
+  dialogBody: "Доорх аль нэгээр нь бичээрэй. Бичсэн зурвас бүрт хариулна.",
   close: "Хаах",
 };
 
@@ -407,6 +408,8 @@ export const adminSettings = {
   facebookUrl: "Фэйсбүүк профайлын холбоос",
   viberNumber: "Вайбер дугаар",
   viberHint: "+976-аар эхлүүлж бичнэ үү. Жишээ нь: +97699112233",
+  instagram: "Инстаграм хаяг",
+  instagramHint: "Хаяг эсвэл холбоос. Жишээ нь: @myanganbuu. Хоосон орхивол товч харагдахгүй.",
   heroTitle: "Нүүр хуудасны гол зураг",
   heroHint: "Аль ажлын өмнө/дараа зураг нүүрэнд харагдах вэ.",
   heroAuto: "Автоматаар (онцлох эхний ажил)",
@@ -591,3 +594,7 @@ export const adminAbout = {
   descriptionPlaceholder: "Жишээ нь: Гэр бүлийнхэнтэйгээ Цагаан сараар",
   view: "Хуудсыг харах",
 };
+
+// Error-page copy lives in its own small file so error boundaries, which load
+// on every page, don't pull this whole file into the browser.
+export { pageError } from "./errors";

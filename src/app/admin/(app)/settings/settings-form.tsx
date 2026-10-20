@@ -7,7 +7,7 @@ import { IconCheck } from "@/components/icons";
 import { adminSettings as t, common } from "@/messages/mn";
 
 type Props = {
-  settings: { facebookUrl: string; viberNumber: string };
+  settings: { facebookUrl: string; viberNumber: string; instagram: string };
 };
 
 export function SettingsForm({ settings }: Props) {
@@ -27,6 +27,13 @@ export function SettingsForm({ settings }: Props) {
         </label>
         <input id="viberNumber" name="viberNumber" type="tel" inputMode="tel" defaultValue={settings.viberNumber} className={`${fieldClass} tabular`} />
         <p className="mt-2 text-base text-ink-2">{t.viberHint}</p>
+      </div>
+      <div>
+        <label htmlFor="instagram" className={labelClass}>
+          {t.instagram}
+        </label>
+        <input id="instagram" name="instagram" autoCapitalize="none" autoCorrect="off" spellCheck={false} defaultValue={settings.instagram} maxLength={200} className={fieldClass} />
+        <p className="mt-2 text-base text-ink-2">{t.instagramHint}</p>
       </div>
 
       <div className="flex items-center gap-3">

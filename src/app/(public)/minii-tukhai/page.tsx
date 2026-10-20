@@ -25,7 +25,7 @@ export default async function AboutPage() {
   const paragraphs = (data.bio || t.defaultBio).split(/\n{2,}/).filter(Boolean);
   // His own numbers first, then the live count of published work.
   const stats = [...data.stats, ...(data.works ? [{ value: String(data.works), label: t.works }] : [])];
-  const url = `${process.env.SITE_URL ?? ""}/minii-tukhai`;
+  const url = "/minii-tukhai";
 
   return (
     <>

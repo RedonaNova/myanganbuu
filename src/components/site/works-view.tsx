@@ -20,7 +20,8 @@ const shareLabel = "sr-only sm:not-sr-only";
 export async function WorksView({ service }: { service?: ServiceSlug }) {
   const [projects, types] = await Promise.all([getProjectCards({ service }), getServiceShowcase()]);
   const title = service ? serviceNames[service] : t.title;
-  const url = `${process.env.SITE_URL ?? ""}${service ? `/ajluud/torol/${service}` : "/ajluud"}`;
+  // The selected type has its own page, so the share carries the type.
+  const url = service ? `/ajluud/torol/${service}` : "/ajluud";
   const countLabel = `${projects.length} ${t.count}`;
 
   return (

@@ -3,15 +3,16 @@
  * - Offline support for showing work on a weak connection:
  *     photos (/media)       cache first, capped, never change once uploaded
  *     build assets          cache first (file names are content hashes)
- *     public pages          network first with a short timeout, cache fallback
- *   Admin, API and quote pages are never cached.
+ *     public pages          network first, cached copy only when offline
+ *   Admin, API and quote pages are never cached. In-app navigations (RSC
+ *   requests) are left to Next.js: serving a stale or mismatched payload
+ *   breaks the router and blanks the page.
  */
-const VERSION = "v1";
+const VERSION = "v2";
 const PAGES = `mb-pages-${VERSION}`;
 const STATIC = `mb-static-${VERSION}`;
 const MEDIA = "mb-media"; // photo URLs are immutable, so no version
 const MEDIA_LIMIT = 600;
-const NETWORK_TIMEOUT_MS = 3500;
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -42,7 +43,7 @@ self.addEventListener("fetch", (event) => {
 
   if (p.startsWith("/media/")) return event.respondWith(cacheFirst(req, MEDIA, true));
   if (p.startsWith("/_next/static/") || p.startsWith("/_next/image")) return event.respondWith(cacheFirst(req, STATIC));
-  if (req.mode === "navigate" || req.headers.get("RSC") === "1") return event.respondWith(networkFirst(req));
+  if (req.mode === "navigate") return event.respondWith(networkFirst(req));
 });
 
 async function cacheFirst(req, cacheName, trim) {
@@ -59,17 +60,13 @@ async function cacheFirst(req, cacheName, trim) {
 
 async function networkFirst(req) {
   const cache = await caches.open(PAGES);
-  // RSC payloads and HTML for the same URL must not overwrite each other.
-  const key = req.headers.get("RSC") === "1" ? new Request(req.url + (req.url.includes("?") ? "&" : "?") + "__rsc") : req;
   try {
-    const res = await Promise.race([
-      fetch(req),
-      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), NETWORK_TIMEOUT_MS)),
-    ]);
-    if (res.ok) cache.put(key, res.clone());
+    const res = await fetch(req);
+    if (res.ok) cache.put(req, res.clone());
     return res;
   } catch {
-    const hit = (await cache.match(key, { ignoreVary: true })) || (req.mode === "navigate" && (await cache.match("/uzuulekh")));
+    // Offline: the last copy of this page, else the presentation screen.
+    const hit = (await cache.match(req, { ignoreVary: true })) || (await cache.match("/uzuulekh"));
     return hit || Response.error();
   }
 }

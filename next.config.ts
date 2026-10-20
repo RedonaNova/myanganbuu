@@ -1,5 +1,12 @@
 import type { NextConfig } from "next";
 
+// Facebook previews (og:url, og:image) and the sitemap need the real public
+// address. Shares already use the visitor's address, but previews cannot.
+const siteUrl = process.env.SITE_URL ?? "";
+if (process.argv.includes("build") && !/^https:\/\/(?!localhost|127\.)/.test(siteUrl)) {
+  console.warn(`\n⚠ SITE_URL is "${siteUrl}". Set it to the public https address (e.g. https://myanganbuu.mn) or Facebook previews will break.\n`);
+}
+
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,

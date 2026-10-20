@@ -19,10 +19,9 @@ const shareButton =
 export default async function SettingsPage() {
   const user = await requireAdmin();
   const [settings, types] = await Promise.all([getSettings(), getServiceShowcase()]);
-  const base = process.env.SITE_URL ?? "";
   const shareRows = [
-    { key: "all", label: t.shareAll, url: `${base}/ajluud`, count: null as number | null },
-    ...types.filter((s) => s.count > 0).map((s) => ({ key: s.slug, label: serviceNames[s.slug], url: `${base}/ajluud/torol/${s.slug}`, count: s.count })),
+    { key: "all", label: t.shareAll, url: "/ajluud", count: null as number | null },
+    ...types.filter((s) => s.count > 0).map((s) => ({ key: s.slug, label: serviceNames[s.slug], url: `/ajluud/torol/${s.slug}`, count: s.count })),
   ];
 
   return (
