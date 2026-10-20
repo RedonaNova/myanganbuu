@@ -8,7 +8,8 @@ import { ChoiceGrid } from "@/components/admin/choice-grid";
 import { Toggle } from "@/components/admin/toggle";
 import { fieldClass, labelClass, primaryButtonClass } from "@/components/admin/ui";
 import { IconCheck, IconExternal } from "@/components/icons";
-import { admin, common, districts, rooms, serviceNames } from "@/messages/mn";
+import { FacebookShare } from "@/components/facebook-share";
+import { admin, common, districts, projectPage, rooms, serviceNames } from "@/messages/mn";
 
 const t = admin.info;
 
@@ -27,7 +28,7 @@ type Project = {
   featured: boolean;
 };
 
-export function ProjectInfoForm({ project }: { project: Project }) {
+export function ProjectInfoForm({ project, siteUrl }: { project: Project; siteUrl: string }) {
   const [state, action, pending] = useActionState<FormState, FormData>(updateProject.bind(null, project.id), {});
   const [deleting, startDelete] = useTransition();
 
@@ -121,14 +122,21 @@ export function ProjectInfoForm({ project }: { project: Project }) {
       </div>
 
       {project.published && (
-        <Link
-          href={`/tusul/${project.slug}`}
-          target="_blank"
-          className="inline-flex min-h-12 items-center gap-2 text-lg font-semibold text-accent"
-        >
-          <IconExternal size={22} />
-          {admin.projects.viewPublic}
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href={`/ajluud/${project.slug}`}
+            target="_blank"
+            className="inline-flex min-h-12 items-center gap-2 rounded-full border border-line px-5 text-lg font-semibold"
+          >
+            <IconExternal size={22} />
+            {admin.projects.viewPublic}
+          </Link>
+          <FacebookShare
+            url={`${siteUrl}/ajluud/${project.slug}`}
+            label={projectPage.shareFacebook}
+            className="inline-flex min-h-12 items-center gap-2 rounded-full border border-line px-5 text-lg font-semibold"
+          />
+        </div>
       )}
 
       <div className="border-t border-line pt-6">

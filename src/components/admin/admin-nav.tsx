@@ -9,7 +9,8 @@ const items = [
   { href: "/admin/projects", label: t.nav.projects, Icon: IconGrid },
   { href: "/admin/inquiries", label: t.nav.inquiries, Icon: IconInbox },
   { href: "/admin/quotes", label: t.nav.quotes, Icon: IconReceipt },
-  { href: "/admin/settings", label: t.nav.settings, Icon: IconSettings },
+  // The home-page and about-page editors live under Тохиргоо.
+  { href: "/admin/settings", label: t.nav.settings, Icon: IconSettings, also: ["/admin/home", "/admin/about"] },
 ];
 
 /** Bottom tab bar on phones, left rail on wide screens. */
@@ -21,8 +22,9 @@ export function AdminNav({ newInquiries = 0 }: { newInquiries?: number }) {
 export function NavList({ active, newInquiries = 0 }: { active?: string; newInquiries?: number }) {
   return (
     <ul className="grid grid-cols-4 md:grid-cols-1 md:gap-1">
-      {items.map(({ href, label, Icon }) => {
-        const current = !!active && (active === href || active.startsWith(`${href}/`));
+      {items.map(({ href, label, Icon, ...rest }) => {
+        const prefixes = [href, ...("also" in rest && rest.also ? rest.also : [])];
+        const current = !!active && prefixes.some((p) => active === p || active.startsWith(`${p}/`));
         return (
           <li key={href}>
             <Link

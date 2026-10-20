@@ -8,6 +8,7 @@ import { requireAdmin } from "@/lib/session";
 import { deleteImage } from "@/lib/images";
 import { slugify } from "@/lib/slug";
 import { ROOMS, SERVICE_SLUGS } from "@/lib/catalog";
+import { setFeatured } from "@/lib/featured";
 import { districts, admin as t } from "@/messages/mn";
 
 /** Public pages cache project data under these tags. */
@@ -103,12 +104,15 @@ export async function updateProject(id: number, _prev: FormState, formData: Form
         durationDays: duration ? Math.round(duration) : null,
         completedAt: /^\d{4}-\d{2}-\d{2}$/.test(d.completedAt) ? new Date(`${d.completedAt}T00:00:00Z`) : null,
         published: d.published,
-        featured: d.featured,
       },
     }),
     db.projectService.deleteMany({ where: { projectId: id } }),
     db.projectService.createMany({ data: d.services.map((serviceSlug) => ({ projectId: id, serviceSlug })) }),
   ]);
+  if (d.featured !== current.featured) {
+    await setFeatured(id, d.featured && d.published);
+    updateTag("settings");
+  }
   invalidate(current.slug);
   if (slug !== current.slug) invalidate(slug);
   return { ok: true };
@@ -118,9 +122,11 @@ export async function deleteProject(id: number) {
   await requireAdmin();
   const project = await db.project.findUnique({ where: { id }, include: { photos: true } });
   if (!project) redirect("/admin/projects");
+  await setFeatured(id, false);
   await db.project.delete({ where: { id } });
   await Promise.all(project.photos.map((p) => deleteImage("public", p.storageKey)));
   invalidate(project.slug);
+  updateTag("settings");
   redirect("/admin/projects");
 }
 

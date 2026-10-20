@@ -2,7 +2,8 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/lib/db";
 import { toClientPhoto, type ClientPhoto } from "@/lib/photos";
-import type { RoomKey, ServiceSlug } from "@/lib/catalog";
+import { SERVICE_SLUGS, type RoomKey, type ServiceSlug } from "@/lib/catalog";
+import { featuredIds, getSettings } from "@/lib/settings";
 
 // Public data. Cached in memory and invalidated by the admin actions through
 // the "projects" / "project:<slug>" tags, so pages are fast on a small VM.
@@ -68,14 +69,32 @@ export async function getProjectCards(filter: { room?: RoomKey; service?: Servic
   return rows.map(toCard);
 }
 
+/** His highlighted works, in the order he set in Admin > Нүүр хуудас. */
 export async function getFeaturedCards(limit = 4) {
   "use cache";
   cacheLife("days");
+  cacheTag("projects", "settings");
+  const ids = featuredIds(await getSettings());
+  if (ids.length) {
+    const rows = await fetchCards({ id: { in: ids } });
+    const ordered = ids.map((id) => rows.find((r) => r.id === id)).filter((r) => !!r);
+    if (ordered.length) return ordered.slice(0, limit).map(toCard);
+  }
+  // Nothing chosen yet: the newest work, so the home page is never empty.
+  return (await fetchCards({}, limit)).map(toCard);
+}
+
+/** Every work type with how many published works it has and a photo of the newest. */
+export async function getServiceShowcase() {
+  "use cache";
+  cacheLife("days");
   cacheTag("projects");
-  const featured = await fetchCards({ featured: true }, limit);
-  // Fall back to the newest work so the home page is never empty.
-  const rows = featured.length ? featured : await fetchCards({}, limit);
-  return rows.map(toCard);
+  return Promise.all(
+    SERVICE_SLUGS.map(async (slug) => {
+      const rows = await fetchCards({ services: { some: { serviceSlug: slug } } });
+      return { slug, count: rows.length, cover: rows[0] ? toCard(rows[0]).cover : null };
+    }),
+  );
 }
 
 export async function getProjectsByService(service: ServiceSlug, limit = 3) {
@@ -162,13 +181,15 @@ export async function getHeroPair(heroProjectId: string) {
   const id = Number(heroProjectId);
   const include = { heroPair: { include: { pairedAfter: true } } } as const;
   const chosen = id ? await db.project.findFirst({ where: { id, published: true, heroPairId: { not: null } }, include }) : null;
+  // Otherwise the first highlighted work that has a before/after pair.
+  const highlighted = featuredIds(await getSettings());
+  const candidates = chosen
+    ? []
+    : await db.project.findMany({ where: { published: true, heroPairId: { not: null } }, include, orderBy: [{ sortOrder: "asc" }, { id: "desc" }] });
   const project =
     chosen ??
-    (await db.project.findFirst({
-      where: { published: true, heroPairId: { not: null } },
-      include,
-      orderBy: [{ featured: "desc" }, { sortOrder: "asc" }, { completedAt: "desc" }],
-    }));
+    highlighted.map((hid) => candidates.find((c) => c.id === hid)).find((c) => !!c) ??
+    candidates[0];
   const before = project?.heroPair;
   if (!project || !before?.pairedAfter) return null;
   return {
@@ -190,4 +211,29 @@ export async function getPresentation() {
   });
   const projects = await Promise.all(slugs.map((s) => getProject(s.slug)));
   return projects.filter((p): p is ProjectDetail => !!p);
+}
+
+export type AboutPhoto = { id: number; src: string; width: number; height: number; lqip: string; alt: string; caption: string };
+
+/** Everything the about page shows; text falls back to defaults in messages. */
+export async function getAbout() {
+  "use cache";
+  cacheLife("days");
+  cacheTag("about", "settings", "projects");
+  const [settings, photos, works, trades] = await Promise.all([
+    getSettings(),
+    db.sitePhoto.findMany({ orderBy: [{ sortOrder: "asc" }, { id: "asc" }] }),
+    db.project.count({ where: { published: true } }),
+    db.projectService.findMany({ where: { project: { published: true } }, distinct: ["serviceSlug"], select: { serviceSlug: true } }),
+  ]);
+  return {
+    headline: settings.aboutHeadline,
+    bio: settings.aboutBio,
+    years: Number(settings.aboutYears) || null,
+    works,
+    trades: trades.length,
+    photos: photos.map(
+      (p): AboutPhoto => ({ id: p.id, src: `/media/${p.storageKey}`, width: p.width, height: p.height, lqip: p.lqip, alt: p.alt, caption: p.caption }),
+    ),
+  };
 }

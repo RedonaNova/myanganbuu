@@ -10,6 +10,13 @@ export const SETTING_DEFAULTS = {
   // International format without spaces, e.g. +97699112233.
   viberNumber: "",
   heroProjectId: "",
+  // Comma-separated project ids, in display order (max 4).
+  featuredProjectIds: "",
+  // Short status line under the hero, e.g. "Зуны фасадын захиалга авч байна".
+  availability: "Захиалга авч байна",
+  aboutHeadline: "",
+  aboutBio: "",
+  aboutYears: "",
 };
 
 export type Settings = typeof SETTING_DEFAULTS;
@@ -37,4 +44,13 @@ export function messengerLink(s: Settings) {
 export function viberLink(s: Settings) {
   if (!s.viberNumber) return null;
   return `viber://chat?number=${encodeURIComponent(s.viberNumber.replace(/\s+/g, ""))}`;
+}
+
+/** Featured project ids in his chosen order. */
+export function featuredIds(s: Settings): number[] {
+  return s.featuredProjectIds
+    .split(",")
+    .map(Number)
+    .filter((n) => Number.isInteger(n) && n > 0)
+    .slice(0, 4);
 }
