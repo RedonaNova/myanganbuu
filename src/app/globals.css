@@ -235,36 +235,47 @@ html:has(.contact-sheet[open]) {
   overflow: hidden;
 }
 .contact-sheet {
-  opacity: 0;
-  translate: 0 1.5rem;
   transition:
-    opacity 200ms ease,
-    translate 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    display 220ms allow-discrete,
-    overlay 220ms allow-discrete;
+    display 260ms allow-discrete,
+    overlay 260ms allow-discrete;
 }
-.contact-sheet[open] {
+.contact-sheet .sheet-scrim {
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+.contact-sheet .sheet-panel {
+  translate: 0 100%;
+  transition: translate 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.contact-sheet[open] .sheet-scrim {
   opacity: 1;
+}
+.contact-sheet[open] .sheet-panel {
   translate: 0 0;
 }
 @starting-style {
-  .contact-sheet[open] {
+  .contact-sheet[open] .sheet-scrim {
     opacity: 0;
-    translate: 0 1.5rem;
+  }
+  .contact-sheet[open] .sheet-panel {
+    translate: 0 100%;
   }
 }
-.contact-sheet::backdrop {
-  transition:
-    opacity 200ms ease,
-    display 200ms allow-discrete,
-    overlay 200ms allow-discrete;
-  opacity: 0;
-}
-.contact-sheet[open]::backdrop {
-  opacity: 1;
-}
-@starting-style {
-  .contact-sheet[open]::backdrop {
+@media (min-width: 40rem) {
+  .contact-sheet .sheet-panel {
+    translate: 0 1rem;
     opacity: 0;
+    transition:
+      translate 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      opacity 200ms ease;
+  }
+  .contact-sheet[open] .sheet-panel {
+    opacity: 1;
+  }
+  @starting-style {
+    .contact-sheet[open] .sheet-panel {
+      translate: 0 1rem;
+      opacity: 0;
+    }
   }
 }
