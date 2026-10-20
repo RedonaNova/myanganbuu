@@ -4,10 +4,17 @@ import { useActionState, useState } from "react";
 import { login, type LoginState } from "./actions";
 import { admin as t } from "@/messages/mn";
 import { IconEye, IconEyeOff } from "@/components/icons";
-import { fieldClass, labelClass, primaryButtonClass } from "@/components/admin/ui";
+import {
+  fieldClass,
+  labelClass,
+  primaryButtonClass,
+} from "@/components/admin/ui";
 
 export function LoginForm() {
-  const [state, action, pending] = useActionState<LoginState, FormData>(login, {});
+  const [state, action, pending] = useActionState<LoginState, FormData>(
+    login,
+    {},
+  );
   const [show, setShow] = useState(false);
   // Controlled so a failed attempt (React resets forms after an action) keeps the name.
   const [username, setUsername] = useState("");
@@ -26,6 +33,7 @@ export function LoginForm() {
           autoComplete="username"
           autoCapitalize="none"
           spellCheck={false}
+          defaultValue={"myanganbuu"}
           required
           className={fieldClass}
         />
@@ -55,11 +63,19 @@ export function LoginForm() {
         </div>
       </div>
 
-      <p role="alert" aria-live="polite" className="min-h-6 text-base font-medium text-danger">
+      <p
+        role="alert"
+        aria-live="polite"
+        className="min-h-6 text-base font-medium text-danger"
+      >
         {state.error}
       </p>
 
-      <button type="submit" disabled={pending} className={`${primaryButtonClass} w-full`}>
+      <button
+        type="submit"
+        disabled={pending}
+        className={`${primaryButtonClass} w-full`}
+      >
         {pending ? t.login.submitting : t.login.submit}
       </button>
     </form>
