@@ -7,7 +7,7 @@ import { IconCheck } from "@/components/icons";
 import { adminSettings as t, common } from "@/messages/mn";
 
 type Props = {
-  settings: { facebookUrl: string; messengerUrl: string; viberNumber: string };
+  settings: { facebookUrl: string; viberNumber: string };
 };
 
 export function SettingsForm({ settings }: Props) {
@@ -20,13 +20,6 @@ export function SettingsForm({ settings }: Props) {
           {t.facebookUrl}
         </label>
         <input id="facebookUrl" name="facebookUrl" type="url" inputMode="url" defaultValue={settings.facebookUrl} className={fieldClass} />
-      </div>
-      <div>
-        <label htmlFor="messengerUrl" className={labelClass}>
-          {t.messengerUrl}
-        </label>
-        <input id="messengerUrl" name="messengerUrl" type="url" inputMode="url" defaultValue={settings.messengerUrl} className={fieldClass} />
-        <p className="mt-2 text-base text-ink-2">{t.messengerHint}</p>
       </div>
       <div>
         <label htmlFor="viberNumber" className={labelClass}>

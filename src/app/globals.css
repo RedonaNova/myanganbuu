@@ -229,3 +229,42 @@
   65% { --pos: 38%; }
   100% { --pos: 50%; }
 }
+
+/* ─── Contact modal ──────────────────────────────────────────────────────── */
+html:has(.contact-sheet[open]) {
+  overflow: hidden;
+}
+.contact-sheet {
+  opacity: 0;
+  translate: 0 1.5rem;
+  transition:
+    opacity 200ms ease,
+    translate 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    display 220ms allow-discrete,
+    overlay 220ms allow-discrete;
+}
+.contact-sheet[open] {
+  opacity: 1;
+  translate: 0 0;
+}
+@starting-style {
+  .contact-sheet[open] {
+    opacity: 0;
+    translate: 0 1.5rem;
+  }
+}
+.contact-sheet::backdrop {
+  transition:
+    opacity 200ms ease,
+    display 200ms allow-discrete,
+    overlay 200ms allow-discrete;
+  opacity: 0;
+}
+.contact-sheet[open]::backdrop {
+  opacity: 1;
+}
+@starting-style {
+  .contact-sheet[open]::backdrop {
+    opacity: 0;
+  }
+}

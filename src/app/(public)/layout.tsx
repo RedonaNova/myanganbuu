@@ -1,5 +1,6 @@
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
+import { ContactModal } from "@/components/site/contact";
 import { SwRegister } from "@/components/sw-register";
 import { common } from "@/messages/mn";
 
@@ -15,6 +16,7 @@ export default function PublicLayout({ children }: LayoutProps<"/">) {
       <SiteHeader />
       <main id="main">{children}</main>
       <SiteFooter />
+      <ContactModal />
       <SwRegister />
     </>
   );

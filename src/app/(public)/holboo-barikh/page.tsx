@@ -3,7 +3,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { InquiryForm } from "./inquiry-form";
 import { getSettings } from "@/lib/settings";
-import { ContactButtons, ContactDetails } from "@/components/site/contact";
+import { ContactButtons } from "@/components/site/contact";
 import { contactMethods, districts, footer, inquiry as t, rooms, serviceNames } from "@/messages/mn";
 
 export const metadata: Metadata = {
@@ -49,8 +49,7 @@ async function DirectContact() {
   return (
     <div className="space-y-6 rounded-card bg-surface-2 p-6 lg:sticky lg:top-28">
       <p className="text-base font-semibold text-ink-2">{t.orMessenger}</p>
-      <ContactButtons settings={settings} className="sm:flex-col" />
-      <ContactDetails settings={settings} />
+      <ContactButtons settings={settings} className="sm:flex-col!" />
       <p className="text-sm text-ink-2">{footer.textFirst}</p>
     </div>
   );

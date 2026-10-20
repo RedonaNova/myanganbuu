@@ -19,12 +19,10 @@ export async function saveSettings(_prev: SettingsState, formData: FormData): Pr
   const parsed = z
     .object({
       facebookUrl: url,
-      messengerUrl: url,
       viberNumber: z.string().trim().max(20),
     })
     .safeParse({
       facebookUrl: String(formData.get("facebookUrl") ?? "").trim(),
-      messengerUrl: String(formData.get("messengerUrl") ?? "").trim(),
       viberNumber: String(formData.get("viberNumber") ?? "").replace(/[^\d+]/g, ""),
     });
   if (!parsed.success) return { error: "invalid" };

@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { cacheLife, cacheTag } from "next/cache";
-import { getSettings, messengerLink, viberLink } from "@/lib/settings";
+import { getSettings, viberLink } from "@/lib/settings";
 import { SERVICE_SLUGS } from "@/lib/catalog";
-import { MessengerIcon, ViberIcon } from "@/components/site/contact";
-import { footer as t, nav, serviceNames, site } from "@/messages/mn";
+import { FacebookIcon, ViberIcon } from "@/components/site/contact";
+import { contact, footer as t, nav, serviceNames, site } from "@/messages/mn";
 
 export async function SiteFooter() {
   "use cache";
@@ -27,11 +27,11 @@ export async function SiteFooter() {
           <p className="mt-4 max-w-xs text-base text-ink-2">{t.textFirst}</p>
           <ul className="mt-5 space-y-1 text-lg font-semibold">
             <li>
-              <a href={messengerLink(settings)} className="inline-flex min-h-11 items-center gap-2.5 hover:text-accent" rel="noopener">
+              <a href={settings.facebookUrl} className="inline-flex min-h-11 items-center gap-2.5 hover:text-accent" rel="noopener">
                 <span className="grid size-8 place-items-center rounded-full text-white" style={{ backgroundColor: "#0866ff" }}>
-                  <MessengerIcon size={18} />
+                  <FacebookIcon size={18} />
                 </span>
-                {t.messenger}
+                {contact.facebook}
               </a>
             </li>
             {viber && (
@@ -40,15 +40,10 @@ export async function SiteFooter() {
                   <span className="grid size-8 place-items-center rounded-full text-white" style={{ backgroundColor: "#665cac" }}>
                     <ViberIcon size={18} />
                   </span>
-                  {t.viber}
+                  {contact.viber}
                 </a>
               </li>
             )}
-            <li>
-              <Link href="/holboo-barikh" className="inline-flex min-h-11 items-center hover:text-accent">
-                {t.form}
-              </Link>
-            </li>
             <li>
               <Link href="/minii-tukhai" className="inline-flex min-h-11 items-center hover:text-accent">
                 {nav.about}
@@ -75,9 +70,6 @@ export async function SiteFooter() {
           {copyright}
           {t.rights}
         </p>
-        <a href={settings.facebookUrl} rel="noopener" className="inline-flex min-h-10 items-center hover:text-ink">
-          {t.facebook}
-        </a>
       </div>
     </footer>
   );

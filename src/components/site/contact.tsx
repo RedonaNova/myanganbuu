@@ -1,20 +1,18 @@
-import { messengerLink, viberLink, type Settings } from "@/lib/settings";
+import { getSettings, viberLink, type Settings } from "@/lib/settings";
+import { ContactDialog } from "@/components/site/contact-dialog";
 import { contact as t } from "@/messages/mn";
 
 // Brand colours, darkened where needed so white text passes WCAG AA.
-const MESSENGER = "#0866ff";
+const FACEBOOK = "#0866ff";
 const VIBER = "#665cac";
 
-export function MessengerIcon({ size = 22 }: { size?: number }) {
+export function FacebookIcon({ size = 22 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" fill="currentColor" />
       <path
-        fill="currentColor"
-        d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.42 3.14 7.16.16.15.26.35.27.57l.05 1.78a.8.8 0 0 0 1.12.71l1.98-.88a.8.8 0 0 1 .53-.04c.91.25 1.87.38 2.91.38 5.64 0 10-4.13 10-9.7S17.64 2 12 2Z"
-      />
-      <path
-        fill={MESSENGER}
-        d="m6 14.54 2.94-4.66a1.5 1.5 0 0 1 2.17-.4l2.34 1.75a.6.6 0 0 0 .72 0l3.16-2.4c.42-.32.97.18.69.63l-2.94 4.66a1.5 1.5 0 0 1-2.17.4l-2.34-1.75a.6.6 0 0 0-.72 0l-3.16 2.4c-.42.32-.97-.18-.69-.63Z"
+        fill={FACEBOOK}
+        d="M13.4 22v-7.3h2.45l.37-2.85H13.4v-1.82c0-.82.23-1.38 1.4-1.38h1.5V6.1a20 20 0 0 0-2.18-.11c-2.16 0-3.64 1.32-3.64 3.74v2.12H8.04v2.85h2.44V22Z"
       />
     </svg>
   );
@@ -38,48 +36,31 @@ export function ViberIcon({ size = 22 }: { size?: number }) {
 const button =
   "inline-flex min-h-14 items-center justify-center gap-2.5 rounded-full px-7 text-lg font-semibold whitespace-nowrap text-white transition-[filter,transform] duration-150 hover:brightness-110 active:scale-[0.98]";
 
-/** Messenger always; Viber once he has entered a number in Тохиргоо. */
+/** The only two ways to reach him: Facebook, and Viber once he has saved a number. */
 export function ContactButtons({ settings, className = "" }: { settings: Settings; className?: string }) {
   const viber = viberLink(settings);
   return (
     <div className={`flex flex-col gap-3 sm:flex-row sm:flex-wrap ${className}`}>
-      <a href={messengerLink(settings)} rel="noopener" className={button} style={{ backgroundColor: MESSENGER }}>
-        <MessengerIcon />
-        {t.messenger}
+      <a href={settings.facebookUrl} rel="noopener" className={button} style={{ backgroundColor: FACEBOOK }}>
+        <FacebookIcon />
+        {t.facebook}
       </a>
       {viber && (
         <a href={viber} className={button} style={{ backgroundColor: VIBER }}>
           <ViberIcon />
-          {t.viberButton}
+          {t.viber}
         </a>
       )}
     </div>
   );
 }
 
-/** Facebook and Viber, the two ways he is reached. */
-export function ContactDetails({ settings, tone = "light" }: { settings: Settings; tone?: "light" | "dark" }) {
-  const muted = tone === "dark" ? "text-bg/65" : "text-ink-2";
-  const handle = settings.facebookUrl.replace(/^https?:\/\/(www\.)?/, "").replace(/\/+$/, "");
-  if (!settings.facebookUrl && !settings.viberNumber) return null;
+/** The site-wide contact modal, filled with his current links. */
+export async function ContactModal() {
+  const settings = await getSettings();
   return (
-    <dl className="space-y-4">
-      {settings.facebookUrl && (
-        <div>
-          <dt className={`text-sm font-semibold ${muted}`}>{t.facebook}</dt>
-          <dd className="mt-1 text-lg font-semibold wrap-break-word">
-            <a href={settings.facebookUrl} rel="noopener" className="underline-offset-4 hover:underline">
-              {handle}
-            </a>
-          </dd>
-        </div>
-      )}
-      {settings.viberNumber && (
-        <div>
-          <dt className={`text-sm font-semibold ${muted}`}>{t.viber}</dt>
-          <dd className="tabular mt-1 text-lg font-semibold">{settings.viberNumber}</dd>
-        </div>
-      )}
-    </dl>
+    <ContactDialog title={t.dialogTitle} body={t.dialogBody} closeLabel={t.close}>
+      <ContactButtons settings={settings} className="sm:flex-col!" />
+    </ContactDialog>
   );
 }

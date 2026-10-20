@@ -6,10 +6,9 @@ import { MediaImage } from "@/components/media-image";
 import { Gallery } from "@/components/gallery";
 import { ProjectCard } from "@/components/site/project-card";
 import { CtaBand } from "@/components/site/cta-band";
-import { ContactDetails } from "@/components/site/contact";
 import { FacebookShare } from "@/components/facebook-share";
 import { ShareButton } from "@/components/share-button";
-import { about as t, contact, projectPage, site } from "@/messages/mn";
+import { about as t, projectPage, site } from "@/messages/mn";
 
 export const metadata: Metadata = {
   title: t.title,
@@ -98,15 +97,6 @@ export default async function AboutPage() {
           </ul>
         </section>
       )}
-
-      <section className="container-page mt-20 md:mt-28" aria-labelledby="contact">
-        <h2 id="contact" className="text-3xl font-bold md:text-5xl">
-          {contact.title}
-        </h2>
-        <div className="mt-8 max-w-3xl">
-          <ContactDetails settings={settings} />
-        </div>
-      </section>
 
       <CtaBand title={t.ctaTitle} body={t.ctaBody} />
     </>

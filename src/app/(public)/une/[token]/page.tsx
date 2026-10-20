@@ -3,9 +3,10 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { getQuoteByToken, quoteNumber, type PublicQuote } from "@/lib/quotes";
-import { getSettings, messengerLink } from "@/lib/settings";
+import { getSettings } from "@/lib/settings";
+import { ContactButtons } from "@/components/site/contact";
 import { longDate, money, quantity } from "@/lib/format";
-import { footer, quotes, site } from "@/messages/mn";
+import { quotes, site } from "@/messages/mn";
 
 const t = quotes.public;
 
@@ -128,15 +129,9 @@ async function QuoteContent({ params }: Pick<PageProps<"/une/[token]">, "params"
         >
           {t.download}
         </a>
-        <a
-          href={messengerLink(settings)}
-          rel="noopener"
-          className="inline-flex min-h-14 items-center justify-center rounded-full border border-line px-7 text-lg font-semibold hover:border-ink-2"
-        >
-          {footer.messenger}
-        </a>
       </div>
-      <p className="mt-3 text-base text-ink-2">{t.questions}</p>
+      <p className="mt-8 text-base text-ink-2">{t.questions}</p>
+      <ContactButtons settings={settings} className="mt-4" />
     </>
   );
 }
