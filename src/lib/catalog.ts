@@ -3,13 +3,11 @@
 
 export const SERVICE_SLUGS = [
   "siding",
-  "tiling",
-  "drywall",
-  "panels",
-  "flooring",
-  "plumbing",
-  "electrical",
+  "renovation",
+  "bathroom",
+  "tv-wall",
   "furniture",
+  "electrical",
   "stretch-ceiling",
 ] as const;
 export type ServiceSlug = (typeof SERVICE_SLUGS)[number];
