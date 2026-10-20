@@ -6,8 +6,10 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/session";
 import { deleteImage } from "@/lib/images";
+import { deleteVideoFiles } from "@/lib/videos";
 import { slugify } from "@/lib/slug";
 import { ROOMS, SERVICE_SLUGS } from "@/lib/catalog";
+import { sortRooms } from "@/lib/rooms";
 import { setFeatured } from "@/lib/featured";
 import { districts, admin as t } from "@/messages/mn";
 
@@ -33,7 +35,7 @@ export type FormState = { error?: string; ok?: boolean };
 export async function createProject(_prev: FormState, formData: FormData): Promise<FormState> {
   await requireAdmin();
   const title = String(formData.get("title") ?? "").trim().slice(0, 190);
-  const room = String(formData.get("room") ?? "OTHER");
+  const picked = sortRooms(formData.getAll("rooms").map(String));
   if (!title) return { error: t.info.titleRequired };
 
   const project = await db.project.create({
@@ -41,7 +43,9 @@ export async function createProject(_prev: FormState, formData: FormData): Promi
       title,
       description: "",
       slug: await uniqueSlug(title),
-      room: (ROOMS as readonly string[]).includes(room) ? (room as (typeof ROOMS)[number]) : "OTHER",
+      // Legacy column: the first room, for any older build still running.
+      room: picked[0] ?? "OTHER",
+      rooms: { create: picked.map((room) => ({ room })) },
       completedAt: new Date(),
     },
   });
@@ -51,7 +55,7 @@ export async function createProject(_prev: FormState, formData: FormData): Promi
 const infoSchema = z.object({
   title: z.string().trim().min(1).max(190),
   description: z.string().max(5000),
-  room: z.enum(ROOMS),
+  rooms: z.array(z.enum(ROOMS)),
   district: z.union([z.enum(districts), z.literal("")]),
   areaM2: z.string().trim().max(10),
   durationDays: z.string().trim().max(5),
@@ -71,7 +75,7 @@ export async function updateProject(id: number, _prev: FormState, formData: Form
   const parsed = infoSchema.safeParse({
     title: formData.get("title") ?? "",
     description: formData.get("description") ?? "",
-    room: formData.get("room") ?? "OTHER",
+    rooms: formData.getAll("rooms"),
     district: formData.get("district") ?? "",
     areaM2: formData.get("areaM2") ?? "",
     durationDays: formData.get("durationDays") ?? "",
@@ -98,7 +102,7 @@ export async function updateProject(id: number, _prev: FormState, formData: Form
         title: d.title,
         slug,
         description: d.description.trim(),
-        room: d.room,
+        room: sortRooms(d.rooms)[0] ?? "OTHER",
         district: d.district,
         areaM2: area,
         durationDays: duration ? Math.round(duration) : null,
@@ -106,6 +110,8 @@ export async function updateProject(id: number, _prev: FormState, formData: Form
         published: d.published,
       },
     }),
+    db.projectRoom.deleteMany({ where: { projectId: id } }),
+    db.projectRoom.createMany({ data: sortRooms(d.rooms).map((room) => ({ projectId: id, room })) }),
     db.projectService.deleteMany({ where: { projectId: id } }),
     db.projectService.createMany({ data: d.services.map((serviceSlug) => ({ projectId: id, serviceSlug })) }),
   ]);
@@ -120,11 +126,12 @@ export async function updateProject(id: number, _prev: FormState, formData: Form
 
 export async function deleteProject(id: number) {
   await requireAdmin();
-  const project = await db.project.findUnique({ where: { id }, include: { photos: true } });
+  const project = await db.project.findUnique({ where: { id }, include: { photos: true, videos: true } });
   if (!project) redirect("/admin/projects");
   await setFeatured(id, false);
   await db.project.delete({ where: { id } });
   await Promise.all(project.photos.map((p) => deleteImage("public", p.storageKey)));
+  await Promise.all(project.videos.map(deleteVideoFiles));
   invalidate(project.slug);
   updateTag("settings");
   redirect("/admin/projects");
@@ -247,4 +254,21 @@ export async function setHeroPair(beforeId: number) {
   if (!photo.pairedAfterId) return;
   await db.project.update({ where: { id: photo.projectId }, data: { heroPairId: beforeId } });
   invalidate(photo.project.slug);
+}
+
+// ─── Videos ──────────────────────────────────────────────────────────────
+
+export async function deleteVideo(videoId: number) {
+  await requireAdmin();
+  const video = await db.video.findUnique({ where: { id: videoId }, include: { project: true } });
+  if (!video) return;
+  await db.video.delete({ where: { id: videoId } });
+  await deleteVideoFiles(video);
+  invalidate(video.project.slug);
+}
+
+export async function updateVideoCaption(videoId: number, caption: string) {
+  await requireAdmin();
+  const video = await db.video.update({ where: { id: videoId }, data: { caption: caption.trim().slice(0, 250) }, include: { project: true } });
+  invalidate(video.project.slug);
 }

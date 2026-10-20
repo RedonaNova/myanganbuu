@@ -13,14 +13,15 @@ import { FacebookShare } from "@/components/facebook-share";
 import { ProjectCard } from "@/components/site/project-card";
 import { CtaBand } from "@/components/site/cta-band";
 import { IconArrowRight } from "@/components/icons";
-import { projectPage as t, projectsPage, rooms, serviceNames, site } from "@/messages/mn";
+import { projectPage as t, projectsPage, serviceNames, site } from "@/messages/mn";
+import { roomNames } from "@/lib/rooms";
 
 export async function generateMetadata({ params }: PageProps<"/ajluud/[slug]">): Promise<Metadata> {
   const project = await getProject((await params).slug);
   if (!project) return {};
   const description =
     project.description.slice(0, 160) ||
-    [rooms[project.room], project.district, project.areaM2 ? area(project.areaM2) : ""].filter(Boolean).join(", ");
+    [roomNames(project.rooms), project.district, project.areaM2 ? area(project.areaM2) : ""].filter(Boolean).join(", ");
   return {
     title: project.title,
     description,
@@ -100,6 +101,8 @@ async function ProjectContent({ params }: Pick<PageProps<"/ajluud/[slug]">, "par
           </div>
         </section>
       )}
+
+      {project.videos.length > 0 && <Videos project={project} />}
 
       {project.progress.length > 0 && <Progress project={project} />}
 
@@ -248,5 +251,54 @@ function DetailSkeleton() {
       <div className="mt-8 h-24 rounded-2xl bg-surface-2" />
       <div className="mt-8 aspect-[4/3] rounded-card bg-surface-2" />
     </div>
+  );
+}
+
+/**
+ * His videos as he uploaded them. Phone videos are often portrait, so each
+ * player is capped to the screen height and keeps its own shape.
+ */
+function Videos({ project }: { project: ProjectDetail }) {
+  return (
+    <section className="container-page mt-16 md:mt-24" aria-labelledby="videos">
+      <h2 id="videos" className="text-3xl font-bold md:text-4xl">
+        {t.videos}
+        <span className="ml-3 align-middle text-lg font-semibold text-ink-2 tabular">{project.videos.length}</span>
+      </h2>
+      <ul className="mt-8 grid gap-10 md:grid-cols-2 md:gap-6">
+        {project.videos.map((v) => {
+          const ratio = v.width && v.height ? v.width / v.height : 16 / 9;
+          return (
+            <li key={v.id} className={ratio > 1 && project.videos.length > 1 ? "md:col-span-2" : ""}>
+              <div
+                className="mx-auto overflow-hidden rounded-card bg-black bg-cover bg-center"
+                style={{
+                  aspectRatio: String(ratio),
+                  width: `min(100%, calc(80dvh * ${ratio.toFixed(4)}))`,
+                  backgroundImage: v.poster?.lqip ? `url(${v.poster.lqip})` : undefined,
+                }}
+              >
+                <video
+                  controls
+                  playsInline
+                  preload={v.poster ? "none" : "metadata"}
+                  poster={v.poster ? `${v.poster.src}/1200.jpg` : undefined}
+                  className="size-full object-contain"
+                >
+                  <source src={v.src} type={v.mime === "video/quicktime" ? "video/mp4" : v.mime} />
+                  {t.videoUnsupported}
+                </video>
+              </div>
+              <div className="mx-auto mt-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1" style={{ width: `min(100%, calc(80dvh * ${ratio.toFixed(4)}))` }}>
+                {v.caption ? <p className="text-base text-ink-2">{v.caption}</p> : <span />}
+                <a href={v.src} download className="text-sm font-semibold text-ink-2 underline underline-offset-4 hover:text-ink">
+                  {t.videoDownload}
+                </a>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }

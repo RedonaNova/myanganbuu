@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/admin/page-header";
 import { cardClass, primaryButtonClass } from "@/components/admin/ui";
 import { IconPlus, IconStar } from "@/components/icons";
 import { admin, rooms } from "@/messages/mn";
+import { roomNames } from "@/lib/rooms";
 
 const t = admin.projects;
 
@@ -13,7 +14,7 @@ export default async function ProjectsPage() {
   await requireAdmin();
   const projects = await db.project.findMany({
     orderBy: [{ completedAt: "desc" }, { id: "desc" }],
-    include: { coverPhoto: true, _count: { select: { photos: true } } },
+    include: { coverPhoto: true, rooms: true, _count: { select: { photos: true } } },
   });
 
   return (
@@ -46,7 +47,7 @@ export default async function ProjectsPage() {
                   <div className="min-w-0 flex-1">
                     <p className="line-clamp-2 text-lg leading-snug font-bold">{p.title}</p>
                     <p className="mt-1 text-base text-ink-2">
-                      {rooms[p.room]} · {p._count.photos ? `${p._count.photos} ${t.photosCount}` : t.noPhotos}
+                      {roomNames(p.rooms.map((r) => r.room)) || rooms.OTHER} · {p._count.photos ? `${p._count.photos} ${t.photosCount}` : t.noPhotos}
                     </p>
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       <span

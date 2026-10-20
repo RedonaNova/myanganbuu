@@ -4,6 +4,8 @@ import { db } from "@/lib/db";
 import { toClientPhoto, type ClientPhoto } from "@/lib/photos";
 import { SERVICE_SLUGS, type RoomKey, type ServiceSlug } from "@/lib/catalog";
 import { aboutStats, featuredIds, getSettings } from "@/lib/settings";
+import { sortRooms } from "@/lib/rooms";
+import { toClientVideo, type ClientVideo } from "@/lib/videos";
 
 // Public data. Cached in memory and invalidated by the admin actions through
 // the "projects" / "project:<slug>" tags, so pages are fast on a small VM.
@@ -11,7 +13,7 @@ import { aboutStats, featuredIds, getSettings } from "@/lib/settings";
 export type ProjectCard = {
   slug: string;
   title: string;
-  room: RoomKey;
+  rooms: RoomKey[];
   district: string;
   areaM2: number | null;
   durationDays: number | null;
@@ -27,6 +29,7 @@ const cardInclude = {
   photos: { orderBy: { sortOrder: "asc" }, take: 1 },
   heroPair: { include: { pairedAfter: true } },
   services: true,
+  rooms: true,
   _count: { select: { photos: true } },
 } as const;
 
@@ -47,7 +50,7 @@ function toCard(p: CardRow): ProjectCard {
   return {
     slug: p.slug,
     title: p.title,
-    room: p.room,
+    rooms: sortRooms(p.rooms.map((r) => r.room)),
     district: p.district,
     areaM2: p.areaM2 ? Number(p.areaM2) : null,
     durationDays: p.durationDays,
@@ -63,7 +66,7 @@ export async function getProjectCards(filter: { room?: RoomKey; service?: Servic
   cacheLife("days");
   cacheTag("projects");
   const rows = await fetchCards({
-    ...(filter.room ? { room: filter.room } : {}),
+    ...(filter.room ? { rooms: { some: { room: filter.room } } } : {}),
     ...(filter.service ? { services: { some: { serviceSlug: filter.service } } } : {}),
   });
   return rows.map(toCard);
@@ -114,6 +117,7 @@ export type ProjectDetail = ProjectCard & {
   pairs: Pair[];
   gallery: ClientPhoto[];
   progress: ClientPhoto[];
+  videos: ClientVideo[];
 };
 
 export async function getProject(slug: string): Promise<ProjectDetail | null> {
@@ -123,7 +127,7 @@ export async function getProject(slug: string): Promise<ProjectDetail | null> {
 
   const p = await db.project.findFirst({
     where: { slug, published: true },
-    include: { ...cardInclude, photos: { orderBy: { sortOrder: "asc" } } },
+    include: { ...cardInclude, photos: { orderBy: { sortOrder: "asc" } }, videos: { orderBy: [{ sortOrder: "asc" }, { id: "asc" }] } },
   });
   if (!p) return null;
 
@@ -152,6 +156,7 @@ export async function getProject(slug: string): Promise<ProjectDetail | null> {
     progress: photos
       .filter((x) => x.role === "PROGRESS")
       .sort((a, b) => (a.milestoneDate || "9").localeCompare(b.milestoneDate || "9")),
+    videos: p.videos.map(toClientVideo),
   };
 }
 

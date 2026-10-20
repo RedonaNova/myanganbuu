@@ -9,7 +9,7 @@ export default async function ProjectInfoPage({ params }: PageProps<"/admin/proj
   await requireAdmin();
   const id = Number((await params).id);
   const project = Number.isInteger(id)
-    ? await db.project.findUnique({ where: { id }, include: { services: true } })
+    ? await db.project.findUnique({ where: { id }, include: { services: true, rooms: true } })
     : null;
   if (!project) notFound();
 
@@ -23,7 +23,7 @@ export default async function ProjectInfoPage({ params }: PageProps<"/admin/proj
           slug: project.slug,
           title: project.title,
           description: project.description,
-          room: project.room,
+          rooms: project.rooms.map((r) => r.room),
           district: project.district,
           areaM2: project.areaM2 ? project.areaM2.toString() : "",
           durationDays: project.durationDays ? String(project.durationDays) : "",

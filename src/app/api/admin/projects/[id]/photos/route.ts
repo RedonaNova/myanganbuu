@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { getAdmin } from "@/lib/session";
 import { processImage } from "@/lib/images";
 import { toClientPhoto } from "@/lib/photos";
-import { rooms } from "@/messages/mn";
+import { roomNames } from "@/lib/rooms";
 
 const MAX_BYTES = 40 * 1024 * 1024;
 
@@ -13,7 +13,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/admin/proje
   if (!(await getAdmin())) return Response.json({ error: "unauthorized" }, { status: 401 });
 
   const projectId = Number((await ctx.params).id);
-  const project = await db.project.findUnique({ where: { id: projectId } });
+  const project = await db.project.findUnique({ where: { id: projectId }, include: { rooms: true } });
   if (!project) return Response.json({ error: "not_found" }, { status: 404 });
 
   const form = await request.formData().catch(() => null);
@@ -33,7 +33,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/admin/proje
     data: {
       projectId,
       ...image,
-      alt: `${rooms[project.room]}, ${project.title}`.slice(0, 250),
+      alt: [roomNames(project.rooms.map((r) => r.room)), project.title].filter(Boolean).join(", ").slice(0, 250),
       sortOrder: (last?.sortOrder ?? -1) + 1,
     },
   });

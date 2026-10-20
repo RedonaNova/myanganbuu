@@ -55,6 +55,8 @@ model Project {
   slug         String    @unique @db.VarChar(191)
   title        String    @db.VarChar(191)
   description  String    @db.Text
+  // Legacy single room, kept so a running older build still works. Rooms now
+  // live in ProjectRoom; drop this column in a later migration.
   room         Room      @default(OTHER)
   district     String    @default("") @db.VarChar(64)
   areaM2       Decimal?  @db.Decimal(8, 1)
@@ -68,13 +70,15 @@ model Project {
   updatedAt    DateTime  @updatedAt
 
   // Cover for cards / OG image, and the BEFORE photo of the headline pair.
-  coverPhotoId Int?    @unique
-  coverPhoto   Photo?  @relation("ProjectCover", fields: [coverPhotoId], references: [id], onDelete: SetNull)
-  heroPairId   Int?    @unique
-  heroPair     Photo?  @relation("ProjectHeroPair", fields: [heroPairId], references: [id], onDelete: SetNull)
+  coverPhotoId Int?   @unique
+  coverPhoto   Photo? @relation("ProjectCover", fields: [coverPhotoId], references: [id], onDelete: SetNull)
+  heroPairId   Int?   @unique
+  heroPair     Photo? @relation("ProjectHeroPair", fields: [heroPairId], references: [id], onDelete: SetNull)
 
   photos   Photo[]          @relation("ProjectPhotos")
+  videos   Video[]
   services ProjectService[]
+  rooms    ProjectRoom[]
 
   @@index([published, featured])
   @@index([published, room])
@@ -94,6 +98,39 @@ enum PhotoRole {
   AFTER
   GALLERY
   PROGRESS
+}
+
+// A work can span several rooms, e.g. a full apartment renovation.
+model ProjectRoom {
+  projectId Int
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  room      Room
+
+  @@id([projectId, room])
+  @@index([room])
+}
+
+// Videos are stored as uploaded (no transcoding on the server) at
+// UPLOAD_DIR/videos/<storageKey>/video.<ext>, and streamed with Range support.
+model Video {
+  id          Int      @id @default(autoincrement())
+  projectId   Int
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  storageKey  String   @unique @db.VarChar(64)
+  mime        String   @db.VarChar(64)
+  ext         String   @db.VarChar(8)
+  sizeBytes   Int
+  width       Int      @default(0)
+  height      Int      @default(0)
+  durationSec Int      @default(0)
+  // Poster frame grabbed in the browser, processed like a photo (public variants).
+  posterKey   String?  @unique @db.VarChar(64)
+  posterLqip  String?  @db.Text
+  caption     String   @default("") @db.VarChar(255)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([projectId, sortOrder])
 }
 
 model Photo {

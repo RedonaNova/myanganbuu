@@ -21,7 +21,7 @@ export default async function PresentPage() {
       projects={projects.map((p) => ({
         slug: p.slug,
         title: p.title,
-        room: p.room,
+        rooms: p.rooms,
         district: p.district,
         areaM2: p.areaM2,
         durationDays: p.durationDays,

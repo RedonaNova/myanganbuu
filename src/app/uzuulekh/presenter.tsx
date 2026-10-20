@@ -18,7 +18,7 @@ type Slide = { kind: "pair"; before: ClientPhoto; after: ClientPhoto } | { kind:
 type Item = {
   slug: string;
   title: string;
-  room: RoomKey;
+  rooms: RoomKey[];
   district: string;
   areaM2: number | null;
   durationDays: number | null;
@@ -103,7 +103,7 @@ export function Presenter({ projects, labels: t, slider }: { projects: Item[]; l
 
       <ul className="grid gap-2 p-2 sm:grid-cols-2">
         {projects.map((p, i) => {
-          const facts = [t.rooms[p.room], p.district, p.areaM2 ? area(p.areaM2) : "", p.durationDays ? days(p.durationDays) : ""]
+          const facts = [p.rooms.map((r) => t.rooms[r]).join(", "), p.district, p.areaM2 ? area(p.areaM2) : "", p.durationDays ? days(p.durationDays) : ""]
             .filter(Boolean)
             .join(" · ");
           return (

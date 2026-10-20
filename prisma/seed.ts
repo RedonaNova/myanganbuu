@@ -36,7 +36,7 @@ type SeedProject = {
 const projects: SeedProject[] = [
   {
     slug: "khausny-fasad-tagt",
-    title: "Хаусны фасадыг шинэчилж, том тагт хийсэн",
+    title: "Хаусын фасадыг шинэчилж, том тагт хийсэн",
     description:
       "Хуучин тоосгон ханыг каркас, дулаалгатай болгож, дээрээс нь цайвар өнгийн фасадын хавтангаар бүрсэн. Цонхны хүрээ, дээврийн ирмэгийг хар өнгийн профайлаар хүрээлсэн.\n\n" +
       "Хаалганы урд баганатай халхавч гаргаж, байшингийн урд талд том тагт, шат, төмөр хашлага хийсэн.",
@@ -45,8 +45,14 @@ const projects: SeedProject[] = [
     featured: true,
     pairs: [
       {
-        before: { file: "siding-before.jpg", alt: "Хаус засварын өмнө: хуучин тоосгон хана, улаан дээвэр, барилгын шат" },
-        after: { file: "siding-after.jpg", alt: "Хаус засварын дараа: цайвар фасадын хавтан, хар дээвэр, тагт, хашлага" },
+        before: {
+          file: "siding-before.jpg",
+          alt: "Хаус засварын өмнө: хуучин тоосгон хана, улаан дээвэр, барилгын шат",
+        },
+        after: {
+          file: "siding-after.jpg",
+          alt: "Хаус засварын дараа: цайвар фасадын хавтан, хар дээвэр, тагт, хашлага",
+        },
       },
     ],
     photos: [],
@@ -61,7 +67,12 @@ const projects: SeedProject[] = [
     services: ["tv-wall", "furniture", "electrical"],
     featured: true,
     pairs: [],
-    photos: [{ file: "stenk-selfmade.jpg", alt: "Зочны өрөө: гантиг хээтэй ТВ хана, босоо панел, LED гэрэл, өлгөөтэй тавиур" }],
+    photos: [
+      {
+        file: "stenk-selfmade.jpg",
+        alt: "Зочны өрөө: гантиг хээтэй ТВ хана, босоо панел, LED гэрэл, өлгөөтэй тавиур",
+      },
+    ],
   },
   {
     slug: "shurshuurtei-ugaalgyn-oroo",
@@ -74,8 +85,14 @@ const projects: SeedProject[] = [
     featured: true,
     pairs: [
       {
-        before: { file: "bathroom-before.jpg", alt: "Угаалгын өрөө ажлын явцад: шалан дээр шинэ ус, бохирын шугам" },
-        after: { file: "bathroom-after.jpg", alt: "Угаалгын өрөө дууссаны дараа: шүршүүр, хавтантай шал, хана" },
+        before: {
+          file: "bathroom-before.jpg",
+          alt: "Угаалгын өрөө ажлын явцад: шалан дээр шинэ ус, бохирын шугам",
+        },
+        after: {
+          file: "bathroom-after.jpg",
+          alt: "Угаалгын өрөө дууссаны дараа: шүршүүр, хавтантай шал, хана",
+        },
       },
     ],
     photos: [],
@@ -84,42 +101,65 @@ const projects: SeedProject[] = [
     slug: "mansardtai-khaus-saiding",
     title: "Мансардтай хаусыг цагаан сайдингаар бүрсэн",
     description:
-      "Хоёр давхар хаусны гадна ханыг бүхэлд нь цагаан сайдингаар бүрж, булан, цонхны хүрээг бараан профайлаар гаргасан.",
+      "Хоёр давхар хаусын гадна ханыг бүхэлд нь цагаан сайдингаар бүрж, булан, цонхны хүрээг бараан профайлаар гаргасан.",
     room: "FACADE",
     services: ["siding"],
     featured: true,
     pairs: [],
-    photos: [{ file: "siding-photo.jpg", alt: "Цагаан сайдингаар бүрсэн мансардтай хаус" }],
+    photos: [
+      {
+        file: "siding-photo.jpg",
+        alt: "Цагаан сайдингаар бүрсэн мансардтай хаус",
+      },
+    ],
   },
   {
     slug: "tom-tsonkhtoi-khaus-fasad",
-    title: "Том цонхтой хаусны фасад",
-    description: "Мансардтай хаусны гадна ханыг цагаан сайдингаар бүрж байх үе. Ажлыг шат, тавцан босгож, аюулгүй хийдэг.",
+    title: "Том цонхтой хаусын фасад",
+    description:
+      "Мансардтай хаусын гадна ханыг цагаан сайдингаар бүрж байх үе. Ажлыг шат, тавцан босгож, аюулгүй хийдэг.",
     room: "FACADE",
     services: ["siding"],
     featured: false,
     pairs: [],
-    photos: [{ file: "in-progress-siding.jpg", alt: "Том цонхтой хаус, цагаан сайдинг бүрж буй үе, барилгын шат" }],
+    photos: [
+      {
+        file: "in-progress-siding.jpg",
+        alt: "Том цонхтой хаус, цагаан сайдинг бүрж буй үе, барилгын шат",
+      },
+    ],
   },
   {
     slug: "neg-davkhar-baishin-fasad",
     title: "Нэг давхар байшинг фасадын хавтангаар бүрсэн",
-    description: "Нэг давхар байшинг тоосгон хээтэй цагаан фасадын хавтангаар бүрж, суурийг бараан өнгөөр ялгасан.",
+    description:
+      "Нэг давхар байшинг тоосгон хээтэй цагаан фасадын хавтангаар бүрж, суурийг бараан өнгөөр ялгасан.",
     room: "FACADE",
     services: ["siding"],
     featured: false,
     pairs: [],
-    photos: [{ file: "siding-photo1.jpg", alt: "Цагаан фасадын хавтангаар бүрсэн нэг давхар байшин" }],
+    photos: [
+      {
+        file: "siding-photo1.jpg",
+        alt: "Цагаан фасадын хавтангаар бүрсэн нэг давхар байшин",
+      },
+    ],
   },
   {
     slug: "ulaan-deevertei-baishin",
     title: "Улаан дээвэртэй байшингийн фасад",
-    description: "Байшингийн ханыг цагаан сайдингаар бүрж, цонх бүрийг бараан өнгийн хүрээгээр ялгаж гаргасан.",
+    description:
+      "Байшингийн ханыг цагаан сайдингаар бүрж, цонх бүрийг бараан өнгийн хүрээгээр ялгаж гаргасан.",
     room: "FACADE",
     services: ["siding"],
     featured: false,
     pairs: [],
-    photos: [{ file: "siding-photo2.jpg", alt: "Цагаан сайдинг, бараан цонхны хүрээтэй улаан дээвэртэй байшин" }],
+    photos: [
+      {
+        file: "siding-photo2.jpg",
+        alt: "Цагаан сайдинг, бараан цонхны хүрээтэй улаан дээвэртэй байшин",
+      },
+    ],
   },
   {
     slug: "khuvtsasny-shuugee",
@@ -131,30 +171,99 @@ const projects: SeedProject[] = [
     featured: false,
     pairs: [],
     photos: [
-      { file: "selfmade-wardrobe.jpg", alt: "Таазаас шал хүртэл цагаан хувцасны шүүгээ, хар бариултай" },
-      { file: "selfmade-wardrobe1.jpg", alt: "Шүүгээний дотор тал: өлгүүр, тавиур, шургуулга" },
+      {
+        file: "selfmade-wardrobe.jpg",
+        alt: "Таазаас шал хүртэл цагаан хувцасны шүүгээ, хар бариултай",
+      },
+      {
+        file: "selfmade-wardrobe1.jpg",
+        alt: "Шүүгээний дотор тал: өлгүүр, тавиур, шургуулга",
+      },
     ],
   },
 ];
 
-const rateItems: { label: string; unit: string; unitPrice: number; category: string }[] = [
-  { label: "Хана, шалны хавтан тавих", unit: "м²", unitPrice: 45000, category: "Хавтан" },
-  { label: "Хуучин хавтан хуулах", unit: "м²", unitPrice: 12000, category: "Хавтан" },
-  { label: "Хана панел суурилуулах", unit: "м²", unitPrice: 35000, category: "Хана" },
-  { label: "Гипсэн хана босгох", unit: "м²", unitPrice: 40000, category: "Хана" },
+const rateItems: {
+  label: string;
+  unit: string;
+  unitPrice: number;
+  category: string;
+}[] = [
+  {
+    label: "Хана, шалны хавтан тавих",
+    unit: "м²",
+    unitPrice: 45000,
+    category: "Хавтан",
+  },
+  {
+    label: "Хуучин хавтан хуулах",
+    unit: "м²",
+    unitPrice: 12000,
+    category: "Хавтан",
+  },
+  {
+    label: "Хана панел суурилуулах",
+    unit: "м²",
+    unitPrice: 35000,
+    category: "Хана",
+  },
+  {
+    label: "Гипсэн хана босгох",
+    unit: "м²",
+    unitPrice: 40000,
+    category: "Хана",
+  },
   { label: "Ламинат шал тавих", unit: "м²", unitPrice: 15000, category: "Шал" },
-  { label: "Суналтын тааз татах", unit: "м²", unitPrice: 30000, category: "Тааз" },
+  {
+    label: "Суналтын тааз татах",
+    unit: "м²",
+    unitPrice: 30000,
+    category: "Тааз",
+  },
   { label: "Хаалга суурилуулах", unit: "ш", unitPrice: 80000, category: "Мод" },
-  { label: "Залгуур, унтраалга гаргах", unit: "цэг", unitPrice: 25000, category: "Цахилгаан" },
-  { label: "Гэрлийн цэг гаргах", unit: "цэг", unitPrice: 30000, category: "Цахилгаан" },
-  { label: "Угаалтуур, бохирын шугам шилжүүлэх", unit: "цэг", unitPrice: 120000, category: "Сантехник" },
-  { label: "Сантехникийн тоног суурилуулах", unit: "ш", unitPrice: 60000, category: "Сантехник" },
-  { label: "Гадна фасадыг сайдингаар бүрэх", unit: "м²", unitPrice: 25000, category: "Фасад" },
+  {
+    label: "Залгуур, унтраалга гаргах",
+    unit: "цэг",
+    unitPrice: 25000,
+    category: "Цахилгаан",
+  },
+  {
+    label: "Гэрлийн цэг гаргах",
+    unit: "цэг",
+    unitPrice: 30000,
+    category: "Цахилгаан",
+  },
+  {
+    label: "Угаалтуур, бохирын шугам шилжүүлэх",
+    unit: "цэг",
+    unitPrice: 120000,
+    category: "Сантехник",
+  },
+  {
+    label: "Сантехникийн тоног суурилуулах",
+    unit: "ш",
+    unitPrice: 60000,
+    category: "Сантехник",
+  },
+  {
+    label: "Гадна фасадыг сайдингаар бүрэх",
+    unit: "м²",
+    unitPrice: 25000,
+    category: "Фасад",
+  },
   { label: "Өдрийн хөлс", unit: "өдөр", unitPrice: 150000, category: "Бусад" },
 ];
 
-async function addPhoto(projectId: number, p: SeedPhoto, role: "BEFORE" | "AFTER" | "GALLERY" | "PROGRESS", sortOrder: number) {
-  const image = await processImage(await readFile(path.join(IMAGES, p.file)), "public");
+async function addPhoto(
+  projectId: number,
+  p: SeedPhoto,
+  role: "BEFORE" | "AFTER" | "GALLERY" | "PROGRESS",
+  sortOrder: number,
+) {
+  const image = await processImage(
+    await readFile(path.join(IMAGES, p.file)),
+    "public",
+  );
   return prisma.photo.create({
     data: {
       projectId,
@@ -169,10 +278,15 @@ async function addPhoto(projectId: number, p: SeedPhoto, role: "BEFORE" | "AFTER
 }
 
 async function seedProjects() {
-  const old = await prisma.project.findMany({ where: { isSample: true }, include: { photos: true } });
+  const old = await prisma.project.findMany({
+    where: { isSample: true },
+    include: { photos: true },
+  });
   for (const p of old) {
     await prisma.project.delete({ where: { id: p.id } });
-    await Promise.all(p.photos.map((ph) => deleteImage("public", ph.storageKey)));
+    await Promise.all(
+      p.photos.map((ph) => deleteImage("public", ph.storageKey)),
+    );
   }
 
   for (const [i, s] of projects.entries()) {
@@ -187,10 +301,13 @@ async function seedProjects() {
         title: s.title,
         description: s.description,
         room: s.room,
+        rooms: { create: [{ room: s.room }] },
         published: true,
         featured: s.featured,
         sortOrder: i,
-        services: { create: s.services.map((serviceSlug) => ({ serviceSlug })) },
+        services: {
+          create: s.services.map((serviceSlug) => ({ serviceSlug })),
+        },
       },
     });
 
@@ -199,17 +316,29 @@ async function seedProjects() {
     for (const pair of s.pairs) {
       const before = await addPhoto(project.id, pair.before, "BEFORE", order++);
       const after = await addPhoto(project.id, pair.after, "AFTER", order++);
-      await prisma.photo.update({ where: { id: before.id }, data: { pairedAfterId: after.id } });
+      await prisma.photo.update({
+        where: { id: before.id },
+        data: { pairedAfterId: after.id },
+      });
       heroPairId ??= before.id;
     }
-    for (const p of s.photos) await addPhoto(project.id, p, p.role ?? "GALLERY", order++);
+    for (const p of s.photos)
+      await addPhoto(project.id, p, p.role ?? "GALLERY", order++);
 
     // Cover: the main pair's AFTER photo, otherwise the first photo.
-    const hero = heroPairId ? await prisma.photo.findUniqueOrThrow({ where: { id: heroPairId } }) : null;
-    const first = await prisma.photo.findFirst({ where: { projectId: project.id }, orderBy: { sortOrder: "asc" } });
+    const hero = heroPairId
+      ? await prisma.photo.findUniqueOrThrow({ where: { id: heroPairId } })
+      : null;
+    const first = await prisma.photo.findFirst({
+      where: { projectId: project.id },
+      orderBy: { sortOrder: "asc" },
+    });
     await prisma.project.update({
       where: { id: project.id },
-      data: { heroPairId, coverPhotoId: hero?.pairedAfterId ?? first?.id ?? null },
+      data: {
+        heroPairId,
+        coverPhotoId: hero?.pairedAfterId ?? first?.id ?? null,
+      },
     });
     console.log(`✓ ${s.title} (${order} photos)`);
   }
@@ -217,35 +346,53 @@ async function seedProjects() {
 
 /** His highlight list, in seed order, unless he has already chosen one. */
 async function seedFeatured() {
-  const existing = await prisma.setting.findUnique({ where: { key: "featuredProjectIds" } });
-  if (existing?.value) return console.log("· featured works already chosen, left as is");
+  const existing = await prisma.setting.findUnique({
+    where: { key: "featuredProjectIds" },
+  });
+  if (existing?.value)
+    return console.log("· featured works already chosen, left as is");
   const featured = await prisma.project.findMany({
     where: { featured: true, published: true },
     orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
     take: 4,
   });
   const value = featured.map((p) => p.id).join(",");
-  await prisma.setting.upsert({ where: { key: "featuredProjectIds" }, create: { key: "featuredProjectIds", value }, update: { value } });
+  await prisma.setting.upsert({
+    where: { key: "featuredProjectIds" },
+    create: { key: "featuredProjectIds", value },
+    update: { value },
+  });
   console.log(`✓ ${featured.length} featured works`);
 }
 
 /** His profile photo for the about page, unless he has already set one. */
 async function seedPortrait() {
-  if (await prisma.sitePhoto.findFirst({ where: { isPortrait: true } })) return console.log("· profile photo already set, left as is");
-  const image = await processImage(await readFile(path.join(IMAGES, "pfp.jpg")), "public");
-  await prisma.sitePhoto.create({ data: { ...image, alt: "Мянганбуу, дээлтэй", isPortrait: true } });
+  if (await prisma.sitePhoto.findFirst({ where: { isPortrait: true } }))
+    return console.log("· profile photo already set, left as is");
+  const image = await processImage(
+    await readFile(path.join(IMAGES, "pfp.jpg")),
+    "public",
+  );
+  await prisma.sitePhoto.create({
+    data: { ...image, alt: "Мянганбуу, дээлтэй", isPortrait: true },
+  });
   console.log("✓ profile photo");
 }
 
 async function seedRates() {
-  if ((await prisma.rateItem.count()) > 0) return console.log("· rate card already filled, left as is");
-  await prisma.rateItem.createMany({ data: rateItems.map((r, i) => ({ ...r, sortOrder: i })) });
+  if ((await prisma.rateItem.count()) > 0)
+    return console.log("· rate card already filled, left as is");
+  await prisma.rateItem.createMany({
+    data: rateItems.map((r, i) => ({ ...r, sortOrder: i })),
+  });
   console.log(`✓ ${rateItems.length} rate card items`);
 }
 
 async function seedQuote() {
   await prisma.quote.deleteMany({ where: { clientName: SAMPLE_CLIENT } });
-  const rates = await prisma.rateItem.findMany({ orderBy: { sortOrder: "asc" } });
+  const rates = await prisma.rateItem.findMany({
+    orderBy: { sortOrder: "asc" },
+  });
   const pick = (label: string) => rates.find((r) => r.label === label);
   const lines = [
     { item: pick("Хуучин хавтан хуулах"), quantity: 18 },
@@ -263,7 +410,9 @@ async function seedQuote() {
       clientName: SAMPLE_CLIENT,
       address: "Баянзүрх дүүрэг, 26-р хороо",
       note: "Хавтан, цавуу, сантехникийн тоног төхөөрөмжийг захиалагч өөрөө авна.",
-      validUntil: new Date(validUntil.toISOString().slice(0, 10) + "T00:00:00Z"),
+      validUntil: new Date(
+        validUntil.toISOString().slice(0, 10) + "T00:00:00Z",
+      ),
       lines: {
         create: lines.map((l, i) => ({
           label: l.item!.label,

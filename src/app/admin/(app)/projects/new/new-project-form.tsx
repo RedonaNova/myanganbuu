@@ -25,9 +25,9 @@ export function NewProjectForm() {
 
       <ChoiceGrid
         legend={t.roomLabel}
-        name="room"
-        type="radio"
-        defaultValue={["OTHER"]}
+        name="rooms"
+        type="checkbox"
+        defaultValue={[]}
         options={ROOMS.map((r) => ({ value: r, label: rooms[r] }))}
       />
 

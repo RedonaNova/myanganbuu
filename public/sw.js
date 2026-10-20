@@ -8,7 +8,7 @@
  *   requests) are left to Next.js: serving a stale or mismatched payload
  *   breaks the router and blanks the page.
  */
-const VERSION = "v2";
+const VERSION = "v3";
 const PAGES = `mb-pages-${VERSION}`;
 const STATIC = `mb-static-${VERSION}`;
 const MEDIA = "mb-media"; // photo URLs are immutable, so no version
@@ -40,6 +40,8 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return;
   const p = url.pathname;
   if (p.startsWith("/admin") || p.startsWith("/api") || p.startsWith("/une") || p === "/sw.js") return;
+  // Videos stream with Range requests and are far too big for the cache.
+  if (p.startsWith("/media/v/")) return;
 
   if (p.startsWith("/media/")) return event.respondWith(cacheFirst(req, MEDIA, true));
   if (p.startsWith("/_next/static/") || p.startsWith("/_next/image")) return event.respondWith(cacheFirst(req, STATIC));

@@ -18,7 +18,7 @@ type Project = {
   slug: string;
   title: string;
   description: string;
-  room: string;
+  rooms: string[];
   district: string;
   areaM2: string;
   durationDays: string;
@@ -59,9 +59,9 @@ export function ProjectInfoForm({ project }: { project: Project }) {
 
       <ChoiceGrid
         legend={t.room}
-        name="room"
-        type="radio"
-        defaultValue={[project.room]}
+        name="rooms"
+        type="checkbox"
+        defaultValue={project.rooms}
         options={ROOMS.map((r) => ({ value: r, label: rooms[r] }))}
       />
 
