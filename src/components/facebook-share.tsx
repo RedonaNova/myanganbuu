@@ -25,9 +25,21 @@ export function FacebookShare({
   return (
     <a
       href={facebookShareUrl(url)}
-      onClick={(e) => {
+      onClick={async (e) => {
         e.preventDefault();
-        window.open(facebookShareUrl(absoluteUrl(url)), "_blank", "noopener,noreferrer");
+        const target = absoluteUrl(url);
+        // On phones the Facebook app claims facebook.com links and drops the
+        // share request, landing on the feed. The system share sheet hands the
+        // link to the app's real composer instead (pick Facebook there).
+        if (navigator.share && matchMedia("(pointer: coarse)").matches) {
+          try {
+            await navigator.share({ url: target });
+          } catch {
+            // Cancelled by the user.
+          }
+          return;
+        }
+        window.open(facebookShareUrl(target), "_blank", "noopener,noreferrer");
       }}
       target="_blank"
       rel="noopener noreferrer"
