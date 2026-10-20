@@ -229,14 +229,12 @@ async function seedFeatured() {
   console.log(`✓ ${featured.length} featured works`);
 }
 
-/** A starting photo for the about page until he uploads his own. */
-async function seedAboutPhoto() {
-  if ((await prisma.sitePhoto.count()) > 0) return console.log("· about photos already added, left as is");
-  const image = await processImage(await readFile(path.join(IMAGES, "in-progress-siding.jpg")), "public");
-  await prisma.sitePhoto.create({
-    data: { ...image, alt: "Хаусны фасадыг сайдингаар бүрж буй үе, барилгын шат", caption: "Ажлын үеэр" },
-  });
-  console.log("✓ about page photo");
+/** His profile photo for the about page, unless he has already set one. */
+async function seedPortrait() {
+  if (await prisma.sitePhoto.findFirst({ where: { isPortrait: true } })) return console.log("· profile photo already set, left as is");
+  const image = await processImage(await readFile(path.join(IMAGES, "pfp.jpg")), "public");
+  await prisma.sitePhoto.create({ data: { ...image, alt: "Мянганбуу, дээлтэй", isPortrait: true } });
+  console.log("✓ profile photo");
 }
 
 async function seedRates() {
@@ -282,7 +280,7 @@ async function seedQuote() {
 
 await seedProjects();
 await seedFeatured();
-await seedAboutPhoto();
+await seedPortrait();
 await seedRates();
 await seedQuote();
 await prisma.$disconnect();

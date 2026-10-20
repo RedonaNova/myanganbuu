@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { InquiryForm } from "./inquiry-form";
-import { getSettings, messengerLink, viberLink } from "@/lib/settings";
+import { getSettings } from "@/lib/settings";
+import { ContactButtons, ContactDetails } from "@/components/site/contact";
 import { contactMethods, districts, footer, inquiry as t, rooms, serviceNames } from "@/messages/mn";
 
 export const metadata: Metadata = {
@@ -45,29 +46,12 @@ async function Form({ searchParams }: Pick<PageProps<"/holboo-barikh">, "searchP
 
 async function DirectContact() {
   const settings = await getSettings();
-  const viber = viberLink(settings);
   return (
-    <div className="rounded-card bg-surface-2 p-6 lg:sticky lg:top-28">
+    <div className="space-y-6 rounded-card bg-surface-2 p-6 lg:sticky lg:top-28">
       <p className="text-base font-semibold text-ink-2">{t.orMessenger}</p>
-      <ul className="mt-4 space-y-2">
-        <li>
-          <a
-            href={messengerLink(settings)}
-            rel="noopener"
-            className="flex min-h-14 items-center justify-center rounded-full bg-ink px-6 text-lg font-semibold text-bg"
-          >
-            {footer.messenger}
-          </a>
-        </li>
-        {viber && (
-          <li>
-            <a href={viber} className="flex min-h-14 items-center justify-center rounded-full border border-ink/20 px-6 text-lg font-semibold">
-              {footer.viber}
-            </a>
-          </li>
-        )}
-      </ul>
-      <p className="mt-4 text-sm text-ink-2">{footer.textFirst}</p>
+      <ContactButtons settings={settings} className="sm:flex-col" />
+      <ContactDetails settings={settings} />
+      <p className="text-sm text-ink-2">{footer.textFirst}</p>
     </div>
   );
 }

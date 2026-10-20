@@ -4,12 +4,13 @@ import { useRef, useState, useTransition } from "react";
 import { deleteSitePhoto, reorderSitePhotos, updateSitePhoto } from "../settings/actions";
 import { prepareImage, uploadWithProgress, UploadError } from "@/lib/client-image";
 import { MediaImage } from "@/components/media-image";
-import { cardClass, fieldClass, primaryButtonClass, secondaryButtonClass } from "@/components/admin/ui";
-import { IconCamera, IconCheck, IconChevronDown, IconChevronUp, IconStar } from "@/components/icons";
+import { cardClass, fieldClass, primaryButtonClass } from "@/components/admin/ui";
+import { IconCamera, IconCheck, IconChevronDown, IconChevronUp } from "@/components/icons";
 import { admin, adminAbout as t, common } from "@/messages/mn";
 
 type Photo = { id: number; src: string; width: number; height: number; lqip: string; alt: string; caption: string };
 
+/** The about-page album: family, home, life. Each photo has a description. */
 export function SitePhotoManager({ initial }: { initial: Photo[] }) {
   const [photos, setPhotos] = useState(initial);
   const [uploading, setUploading] = useState<{ name: string; progress: number }[]>([]);
@@ -36,22 +37,18 @@ export function SitePhotoManager({ initial }: { initial: Photo[] }) {
     }
   }
 
-  function reorder(next: Photo[]) {
-    setPhotos(next);
-    start(() => reorderSitePhotos(next.map((p) => p.id)));
-  }
-
   function move(i: number, to: number) {
     const next = [...photos];
     const [p] = next.splice(i, 1);
     next.splice(to, 0, p);
-    reorder(next);
+    setPhotos(next);
+    start(() => reorderSitePhotos(next.map((x) => x.id)));
   }
 
   return (
     <section className={`${cardClass} p-5`}>
-      <h2 className="text-xl font-bold">{t.photosTitle}</h2>
-      <p className="mt-1 text-base text-ink-2">{t.photosHint}</p>
+      <h2 className="text-xl font-bold">{t.albumTitle}</h2>
+      <p className="mt-1 text-base text-ink-2">{t.albumHint}</p>
 
       <input
         ref={inputRef}
@@ -90,7 +87,6 @@ export function SitePhotoManager({ initial }: { initial: Photo[] }) {
             last={i === photos.length - 1}
             onUp={() => move(i, i - 1)}
             onDown={() => move(i, i + 1)}
-            onPortrait={() => move(i, 0)}
             onDelete={() => {
               if (!confirm(admin.photos.confirmDeletePhoto)) return;
               setPhotos((list) => list.filter((x) => x.id !== p.id));
@@ -109,7 +105,6 @@ function PhotoRow({
   last,
   onUp,
   onDown,
-  onPortrait,
   onDelete,
 }: {
   photo: Photo;
@@ -117,54 +112,55 @@ function PhotoRow({
   last: boolean;
   onUp: () => void;
   onDown: () => void;
-  onPortrait: () => void;
   onDelete: () => void;
 }) {
   const [caption, setCaption] = useState(photo.caption);
-  const [alt, setAlt] = useState(photo.alt);
   const [saved, setSaved] = useState(true);
   const [pending, start] = useTransition();
+  const id = `caption-${photo.id}`;
 
   return (
     <li className="rounded-2xl border border-line bg-bg p-3">
       <div className="flex gap-3">
         <div className="relative size-24 shrink-0 overflow-hidden rounded-xl bg-surface-2">
           <MediaImage photo={photo} alt="" sizes="96px" fill className="object-cover" />
-          {first && (
-            <span className="absolute inset-x-1 bottom-1 inline-flex items-center justify-center gap-1 rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-accent-ink">
-              <IconStar size={12} />
-              {t.portrait}
-            </span>
-          )}
         </div>
-        <div className="min-w-0 flex-1 space-y-2">
-          <label className="block">
-            <span className="text-sm font-semibold">{admin.photos.caption}</span>
-            <input value={caption} onChange={(e) => (setCaption(e.target.value), setSaved(false))} maxLength={250} className={`${fieldClass} mt-1 min-h-12 text-base`} />
+        <div className="min-w-0 flex-1">
+          <label htmlFor={id} className="text-sm font-semibold">
+            {t.description}
           </label>
-          <label className="block">
-            <span className="text-sm font-semibold">{admin.photos.alt}</span>
-            <input value={alt} onChange={(e) => (setAlt(e.target.value), setSaved(false))} maxLength={250} className={`${fieldClass} mt-1 min-h-12 text-base`} />
-          </label>
+          <textarea
+            id={id}
+            value={caption}
+            onChange={(e) => {
+              setCaption(e.target.value);
+              setSaved(false);
+            }}
+            rows={3}
+            maxLength={250}
+            placeholder={t.descriptionPlaceholder}
+            className={`${fieldClass} mt-1 min-h-24 py-2 text-base`}
+          />
         </div>
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        {!saved && (
+        {!saved ? (
           <button
             type="button"
             disabled={pending}
-            onClick={() => start(async () => { await updateSitePhoto(photo.id, { caption, alt }); setSaved(true); })}
+            onClick={() =>
+              start(async () => {
+                // The description is also the alt text for screen readers.
+                await updateSitePhoto(photo.id, { caption, alt: caption });
+                setSaved(true);
+              })
+            }
             className={`${primaryButtonClass} min-h-11 px-5 text-base`}
           >
             {pending ? common.saving : common.save}
           </button>
-        )}
-        {saved && caption && <IconCheck size={18} className="text-success" />}
-        {!first && (
-          <button type="button" onClick={onPortrait} className={`${secondaryButtonClass} min-h-11 px-4 text-base`}>
-            <IconStar size={18} />
-            {t.makePortrait}
-          </button>
+        ) : (
+          caption && <IconCheck size={18} className="text-success" />
         )}
         <span className="ml-auto flex">
           <button type="button" aria-label={admin.photos.moveUp} disabled={first} onClick={onUp} className="grid size-11 place-items-center rounded-full text-ink-2 hover:bg-surface-2 disabled:opacity-30">

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cacheLife, cacheTag } from "next/cache";
 import { getSettings, messengerLink, viberLink } from "@/lib/settings";
 import { SERVICE_SLUGS } from "@/lib/catalog";
+import { MessengerIcon, ViberIcon } from "@/components/site/contact";
 import { footer as t, nav, serviceNames, site } from "@/messages/mn";
 
 export async function SiteFooter() {
@@ -18,7 +19,7 @@ export async function SiteFooter() {
         <div>
           <p className="font-display text-3xl font-bold tracking-tight">{site.name}</p>
           <p className="mt-3 max-w-sm text-lg text-ink-2">{site.tagline}</p>
-          <p className="mt-6 text-base text-ink-2">{t.area}</p>
+          <p className="mt-6 text-base text-ink-2">{settings.serviceArea || t.area}</p>
         </div>
 
         <div>
@@ -26,13 +27,19 @@ export async function SiteFooter() {
           <p className="mt-4 max-w-xs text-base text-ink-2">{t.textFirst}</p>
           <ul className="mt-5 space-y-1 text-lg font-semibold">
             <li>
-              <a href={messengerLink(settings)} className="inline-flex min-h-11 items-center hover:text-accent" rel="noopener">
+              <a href={messengerLink(settings)} className="inline-flex min-h-11 items-center gap-2.5 hover:text-accent" rel="noopener">
+                <span className="grid size-8 place-items-center rounded-full text-white" style={{ backgroundColor: "#0866ff" }}>
+                  <MessengerIcon size={18} />
+                </span>
                 {t.messenger}
               </a>
             </li>
             {viber && (
               <li>
-                <a href={viber} className="inline-flex min-h-11 items-center hover:text-accent">
+                <a href={viber} className="inline-flex min-h-11 items-center gap-2.5 hover:text-accent">
+                  <span className="grid size-8 place-items-center rounded-full text-white" style={{ backgroundColor: "#665cac" }}>
+                    <ViberIcon size={18} />
+                  </span>
                   {t.viber}
                 </a>
               </li>

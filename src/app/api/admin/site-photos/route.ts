@@ -1,7 +1,7 @@
 import { revalidateTag } from "next/cache";
 import { db } from "@/lib/db";
 import { getAdmin } from "@/lib/session";
-import { processImage } from "@/lib/images";
+import { deleteImage, processImage } from "@/lib/images";
 import { site } from "@/messages/mn";
 
 const MAX_BYTES = 40 * 1024 * 1024;
@@ -22,9 +22,16 @@ export async function POST(request: Request) {
     return Response.json({ error: "unsupported" }, { status: 415 });
   }
 
-  const last = await db.sitePhoto.findFirst({ orderBy: { sortOrder: "desc" } });
+  // ?portrait=1 replaces his profile photo; otherwise it joins the album.
+  const portrait = new URL(request.url).searchParams.get("portrait") === "1";
+  if (portrait) {
+    const old = await db.sitePhoto.findMany({ where: { isPortrait: true } });
+    await db.sitePhoto.deleteMany({ where: { isPortrait: true } });
+    await Promise.all(old.map((p) => deleteImage("public", p.storageKey)));
+  }
+  const last = await db.sitePhoto.findFirst({ where: { isPortrait: false }, orderBy: { sortOrder: "desc" } });
   const photo = await db.sitePhoto.create({
-    data: { ...image, alt: site.name, sortOrder: (last?.sortOrder ?? -1) + 1 },
+    data: { ...image, alt: site.name, isPortrait: portrait, sortOrder: portrait ? 0 : (last?.sortOrder ?? -1) + 1 },
   });
   revalidateTag("about", { expire: 0 });
 

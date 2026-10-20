@@ -20,7 +20,6 @@ export default async function AdminHomePage() {
     <>
       <PageHeader title={adminHome.title} backHref="/admin/settings" />
       <HomeEditor
-        availability={settings.availability}
         heroProjectId={settings.heroProjectId}
         featured={featuredIds(settings)}
         projects={projects.map((p) => {

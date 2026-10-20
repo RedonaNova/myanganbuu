@@ -17,8 +17,7 @@ type Project = {
 const MAX = 4;
 
 /** One screen for everything on the home page he controls. */
-export function HomeEditor(props: { availability: string; heroProjectId: string; featured: number[]; projects: Project[] }) {
-  const [availability, setAvailability] = useState(props.availability);
+export function HomeEditor(props: { heroProjectId: string; featured: number[]; projects: Project[] }) {
   const [hero, setHero] = useState(props.heroProjectId);
   const [featured, setFeatured] = useState(props.featured.filter((id) => props.projects.some((p) => p.id === id)));
   const [dirty, setDirty] = useState(false);
@@ -45,21 +44,6 @@ export function HomeEditor(props: { availability: string; heroProjectId: string;
 
   return (
     <div className="container-page max-w-2xl space-y-4 pb-40">
-      <section className={`${cardClass} p-5`}>
-        <label htmlFor="availability" className={labelClass}>
-          {t.statusTitle}
-        </label>
-        <input
-          id="availability"
-          value={availability}
-          onChange={(e) => change(setAvailability)(e.target.value)}
-          maxLength={80}
-          placeholder={t.statusPlaceholder}
-          className={fieldClass}
-        />
-        <p className="mt-2 text-base text-ink-2">{t.statusHint}</p>
-      </section>
-
       <section className={`${cardClass} p-5`}>
         <label htmlFor="hero" className={labelClass}>
           {adminSettings.heroTitle}
@@ -148,7 +132,7 @@ export function HomeEditor(props: { availability: string; heroProjectId: string;
             disabled={pending || !dirty}
             onClick={() =>
               start(async () => {
-                await saveHome({ availability, heroProjectId: hero, featured });
+                await saveHome({ heroProjectId: hero, featured });
                 setDirty(false);
                 setSaved(true);
               })

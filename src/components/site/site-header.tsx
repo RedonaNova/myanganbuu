@@ -35,8 +35,8 @@ export function SiteHeader() {
           href="/holboo-barikh"
           className="inline-flex min-h-11 items-center rounded-full bg-ink px-4 text-base font-semibold whitespace-nowrap text-bg transition-transform duration-150 active:scale-[0.97] md:px-5"
         >
-          <span className="sm:hidden">{nav.ctaShort}</span>
-          <span className="hidden sm:inline">{nav.cta}</span>
+          <span className="lg:hidden">{nav.ctaShort}</span>
+          <span className="hidden lg:inline">{nav.cta}</span>
         </Link>
 
         <details className="group relative md:hidden">

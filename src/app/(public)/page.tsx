@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { SERVICE_SLUGS } from "@/lib/catalog";
 import { getAbout, getFeaturedCards, getHeroPair, getServiceShowcase } from "@/lib/queries";
-import { getSettings, messengerLink, viberLink } from "@/lib/settings";
+import { getSettings } from "@/lib/settings";
 import { sliderLabels } from "@/lib/labels";
 import { BeforeAfter } from "@/components/before-after";
 import { MediaImage } from "@/components/media-image";
 import { ProjectCard } from "@/components/site/project-card";
 import { ServiceShowcase } from "@/components/site/service-showcase";
+import { ContactButtons, ContactDetails } from "@/components/site/contact";
 import { services } from "@/content/services";
 import { about, footer, home as t, nav, projectPage, serviceNames, site } from "@/messages/mn";
 
@@ -18,9 +19,8 @@ export default async function Home() {
     getServiceShowcase(),
     getAbout(),
   ]);
-  const viber = viberLink(settings);
   const siteUrl = process.env.SITE_URL ?? "";
-  const portrait = aboutData.photos[0];
+  const portrait = aboutData.portrait;
   const aboutLead = (aboutData.bio || about.defaultBio).split(/\n{2,}/)[0];
 
   return (
@@ -29,32 +29,18 @@ export default async function Home() {
       <section className="container-page pt-8 md:pt-14">
         <div className="lg:grid lg:grid-cols-12 lg:items-end lg:gap-12">
           <div className="lg:col-span-7">
-            {settings.availability && (
-              <p className="inline-flex items-center gap-2.5 rounded-full border border-line bg-surface py-1.5 pr-4 pl-3 text-sm font-semibold">
-                <span aria-hidden="true" className="size-2.5 rounded-full bg-accent" />
-                {settings.availability}
-              </p>
-            )}
-            <h1 className="mt-5 text-[3.25rem] leading-[0.95] font-extrabold tracking-[-0.035em] sm:text-7xl lg:text-[5.75rem] lg:leading-[0.9] xl:text-[7.25rem]">
+            <h1 className="text-[3.25rem] leading-[0.95] font-extrabold tracking-[-0.035em] sm:text-7xl lg:text-[5.75rem] lg:leading-[0.9] xl:text-[7.25rem]">
               {site.name}
             </h1>
           </div>
           <div className="lg:col-span-5 lg:pb-2">
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-2 md:text-xl lg:mt-0">{t.lead}</p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/holboo-barikh"
-                className="inline-flex min-h-14 items-center justify-center rounded-full bg-accent px-8 text-lg font-semibold text-accent-ink transition-colors duration-150 hover:bg-accent-hover"
-              >
-                {nav.cta}
-              </Link>
-              <Link
-                href="/ajluud"
-                className="inline-flex min-h-14 items-center justify-center rounded-full border border-line px-7 text-lg font-semibold transition-colors duration-150 hover:border-ink-2"
-              >
-                {t.secondaryCta}
-              </Link>
-            </div>
+            <Link
+              href="/ajluud"
+              className="mt-8 inline-flex min-h-14 items-center justify-center rounded-full border border-line px-7 text-lg font-semibold transition-colors duration-150 hover:border-ink-2"
+            >
+              {t.secondaryCta}
+            </Link>
           </div>
         </div>
 
@@ -164,29 +150,21 @@ export default async function Home() {
 
       {/* Contact: text first, never a phone call. */}
       <section className="container-page mt-24 md:mt-36" aria-labelledby="contact">
-        <div className="grid gap-8 rounded-card bg-ink p-6 text-bg md:grid-cols-2 md:items-end md:p-14">
+        <div className="grid gap-10 rounded-card bg-ink p-6 text-bg md:grid-cols-2 md:gap-14 md:p-14">
           <div>
             <h2 id="contact" className="text-3xl leading-tight font-bold md:text-5xl">
               {t.contactTitle}
             </h2>
             <p className="mt-4 max-w-md text-lg text-bg/75">{t.contactBody}</p>
           </div>
-          <div className="flex flex-col gap-3">
-            <a
-              href={messengerLink(settings)}
-              rel="noopener"
-              className="inline-flex min-h-16 items-center justify-center rounded-full bg-accent px-8 text-xl font-semibold text-accent-ink transition-colors duration-150 hover:bg-accent-hover"
-            >
-              {footer.messenger}
-            </a>
-            {viber && (
-              <a href={viber} className="inline-flex min-h-16 items-center justify-center rounded-full border border-bg/25 px-8 text-xl font-semibold hover:border-bg/60">
-                {footer.viber}
-              </a>
-            )}
-            <Link href="/holboo-barikh" className="inline-flex min-h-14 items-center justify-center rounded-full px-8 text-lg font-semibold text-bg/80 underline-offset-4 hover:underline">
-              {footer.form}
-            </Link>
+          <div className="space-y-8 md:border-l md:border-bg/15 md:pl-14">
+            <ContactDetails settings={settings} tone="dark" />
+            <div>
+              <ContactButtons settings={settings} />
+              <Link href="/holboo-barikh" className="mt-4 inline-flex min-h-12 items-center text-lg font-semibold text-bg/85 underline underline-offset-4 hover:text-bg">
+                {footer.form}
+              </Link>
+            </div>
           </div>
         </div>
       </section>

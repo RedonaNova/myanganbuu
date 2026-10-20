@@ -231,8 +231,8 @@ model Setting {
   value String @db.Text
 }
 
-// Photos he picks for the about page ("Миний тухай"). The first is the
-// portrait shown at the top.
+// Photos for the about page ("Миний тухай"): one profile photo, plus an
+// album of his life (family, home) with a description each.
 model SitePhoto {
   id         Int      @id @default(autoincrement())
   storageKey String   @unique @db.VarChar(64)
@@ -241,6 +241,7 @@ model SitePhoto {
   lqip       String   @db.Text
   alt        String   @default("") @db.VarChar(255)
   caption    String   @default("") @db.VarChar(255)
+  isPortrait Boolean  @default(false)
   sortOrder  Int      @default(0)
   createdAt  DateTime @default(now())
 }

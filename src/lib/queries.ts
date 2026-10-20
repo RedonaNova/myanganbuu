@@ -3,7 +3,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/lib/db";
 import { toClientPhoto, type ClientPhoto } from "@/lib/photos";
 import { SERVICE_SLUGS, type RoomKey, type ServiceSlug } from "@/lib/catalog";
-import { featuredIds, getSettings } from "@/lib/settings";
+import { aboutStats, featuredIds, getSettings } from "@/lib/settings";
 
 // Public data. Cached in memory and invalidated by the admin actions through
 // the "projects" / "project:<slug>" tags, so pages are fast on a small VM.
@@ -220,20 +220,27 @@ export async function getAbout() {
   "use cache";
   cacheLife("days");
   cacheTag("about", "settings", "projects");
-  const [settings, photos, works, trades] = await Promise.all([
+  const [settings, photos, works] = await Promise.all([
     getSettings(),
     db.sitePhoto.findMany({ orderBy: [{ sortOrder: "asc" }, { id: "asc" }] }),
     db.project.count({ where: { published: true } }),
-    db.projectService.findMany({ where: { project: { published: true } }, distinct: ["serviceSlug"], select: { serviceSlug: true } }),
   ]);
+  const toAbout = (p: (typeof photos)[number]): AboutPhoto => ({
+    id: p.id,
+    src: `/media/${p.storageKey}`,
+    width: p.width,
+    height: p.height,
+    lqip: p.lqip,
+    alt: p.alt,
+    caption: p.caption,
+  });
+  const portrait = photos.find((p) => p.isPortrait);
   return {
     headline: settings.aboutHeadline,
     bio: settings.aboutBio,
-    years: Number(settings.aboutYears) || null,
+    stats: aboutStats(settings),
     works,
-    trades: trades.length,
-    photos: photos.map(
-      (p): AboutPhoto => ({ id: p.id, src: `/media/${p.storageKey}`, width: p.width, height: p.height, lqip: p.lqip, alt: p.alt, caption: p.caption }),
-    ),
+    portrait: portrait ? toAbout(portrait) : null,
+    album: photos.filter((p) => !p.isPortrait).map(toAbout),
   };
 }

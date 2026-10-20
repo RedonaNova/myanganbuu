@@ -12,11 +12,15 @@ export const SETTING_DEFAULTS = {
   heroProjectId: "",
   // Comma-separated project ids, in display order (max 4).
   featuredProjectIds: "",
-  // Short status line under the hero, e.g. "Зуны фасадын захиалга авч байна".
-  availability: "Захиалга авч байна",
+  // Contact details shown on the site (all optional). Phone is for text
+  // messages only: he does not take calls.
+  phone: "",
+  email: "",
+  serviceArea: "",
   aboutHeadline: "",
   aboutBio: "",
-  aboutYears: "",
+  // JSON list of { value, label }, e.g. [{"value":"15","label":"жил туршлага"}].
+  aboutStats: "",
 };
 
 export type Settings = typeof SETTING_DEFAULTS;
@@ -53,4 +57,25 @@ export function featuredIds(s: Settings): number[] {
     .map(Number)
     .filter((n) => Number.isInteger(n) && n > 0)
     .slice(0, 4);
+}
+
+export type AboutStat = { value: string; label: string };
+
+/** His own about-page numbers, in his order (max 4). */
+export function aboutStats(s: Settings): AboutStat[] {
+  try {
+    const parsed = JSON.parse(s.aboutStats || "[]") as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((x): x is AboutStat => typeof x?.value === "string" && typeof x?.label === "string" && !!x.value.trim())
+      .slice(0, 4);
+  } catch {
+    return [];
+  }
+}
+
+/** sms: link for texting him from a phone. */
+export function smsLink(s: Settings) {
+  const digits = s.phone.replace(/[^\d+]/g, "");
+  return digits ? `sms:${digits}` : null;
 }
