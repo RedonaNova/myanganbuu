@@ -1,37 +1,41 @@
 import Link from "next/link";
 import { SERVICE_SLUGS } from "@/lib/catalog";
-import { getFeaturedCards, getHeroPair, getProjectsByService } from "@/lib/queries";
+import { getAbout, getFeaturedCards, getHeroPair, getServiceShowcase } from "@/lib/queries";
 import { getSettings, messengerLink, viberLink } from "@/lib/settings";
-import { BeforeAfter } from "@/components/before-after";
 import { sliderLabels } from "@/lib/labels";
-import { ProjectCard } from "@/components/site/project-card";
-import { ServiceCard } from "@/components/site/service-card";
+import { BeforeAfter } from "@/components/before-after";
 import { MediaImage } from "@/components/media-image";
+import { ProjectCard } from "@/components/site/project-card";
+import { ServiceShowcase } from "@/components/site/service-showcase";
 import { services } from "@/content/services";
-import { IconArrowRight } from "@/components/icons";
-import { footer, home as t, nav, projectPage, serviceNames, site } from "@/messages/mn";
+import { about, footer, home as t, nav, projectPage, serviceNames, site } from "@/messages/mn";
 
 export default async function Home() {
   const settings = await getSettings();
-  const [hero, featured, sidingWork] = await Promise.all([
+  const [hero, featured, showcase, aboutData] = await Promise.all([
     getHeroPair(settings.heroProjectId),
     getFeaturedCards(4),
-    getProjectsByService("siding", 2),
+    getServiceShowcase(),
+    getAbout(),
   ]);
-  // A different siding photo than the hero, when there is one.
-  const specialty = sidingWork.find((p) => p.slug !== hero?.slug) ?? sidingWork[0];
   const viber = viberLink(settings);
   const siteUrl = process.env.SITE_URL ?? "";
+  const portrait = aboutData.photos[0];
+  const aboutLead = (aboutData.bio || about.defaultBio).split(/\n{2,}/)[0];
 
   return (
     <>
-      {/* Hero: name, one line, CTA, and one real before/after. Phones stack
-          naturally; wide screens put the text on one row above a cinematic slider. */}
+      {/* Hero: name, one line, CTA, and one real before/after. */}
       <section className="container-page pt-8 md:pt-14">
         <div className="lg:grid lg:grid-cols-12 lg:items-end lg:gap-12">
           <div className="lg:col-span-7">
-            <p className="text-sm font-bold tracking-[0.14em] text-accent uppercase">{t.eyebrow}</p>
-            <h1 className="mt-4 text-[3.25rem] leading-[0.95] font-extrabold tracking-[-0.035em] sm:text-7xl lg:text-[5.75rem] lg:leading-[0.9] xl:text-[7.25rem]">
+            {settings.availability && (
+              <p className="inline-flex items-center gap-2.5 rounded-full border border-line bg-surface py-1.5 pr-4 pl-3 text-sm font-semibold">
+                <span aria-hidden="true" className="size-2.5 rounded-full bg-accent" />
+                {settings.availability}
+              </p>
+            )}
+            <h1 className="mt-5 text-[3.25rem] leading-[0.95] font-extrabold tracking-[-0.035em] sm:text-7xl lg:text-[5.75rem] lg:leading-[0.9] xl:text-[7.25rem]">
               {site.name}
             </h1>
           </div>
@@ -45,11 +49,10 @@ export default async function Home() {
                 {nav.cta}
               </Link>
               <Link
-                href="/tusul"
-                className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full border border-line px-7 text-lg font-semibold transition-colors duration-150 hover:border-ink-2"
+                href="/ajluud"
+                className="inline-flex min-h-14 items-center justify-center rounded-full border border-line px-7 text-lg font-semibold transition-colors duration-150 hover:border-ink-2"
               >
                 {t.secondaryCta}
-                <IconArrowRight size={20} />
               </Link>
             </div>
           </div>
@@ -67,80 +70,45 @@ export default async function Home() {
             />
             <figcaption className="mt-3 flex items-center justify-between gap-4 text-sm text-ink-2">
               <span className="hidden sm:inline">{projectPage.compareHint}</span>
-              <Link href={`/tusul/${hero.slug}`} className="inline-flex min-h-10 min-w-0 items-center gap-1 font-semibold text-ink hover:text-accent">
-                <span className="line-clamp-1">{hero.title}</span>
-                <IconArrowRight size={16} className="shrink-0" />
+              <Link href={`/ajluud/${hero.slug}`} className="min-w-0 truncate font-semibold text-ink underline-offset-4 hover:underline">
+                {hero.title}
               </Link>
             </figcaption>
           </figure>
         )}
       </section>
 
-      {/* Services */}
-      <section className="container-page mt-24 md:mt-32" aria-labelledby="services">
-        {/* Phones and tablets: heading + a swipeable row of large cards. */}
-        <div className="lg:hidden">
-          <SectionHead id="services" title={t.servicesTitle} href="/uilchilgee" linkLabel={t.servicesAll} />
-          <ul className="-mx-4 mt-8 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-2 scrollbar-none sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0">
-            {SERVICE_SLUGS.map((s, i) => (
-              <li key={s} className="w-[78%] shrink-0 snap-start sm:w-auto">
-                <ServiceCard slug={s} index={i} />
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Desktop: sticky intro with the specialty photo, and a numbered list. */}
-        <div className="hidden lg:grid lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-5">
-            <div className="sticky top-28">
-              <h2 className="text-5xl font-bold">{t.servicesTitle}</h2>
-              <p className="mt-5 max-w-md text-lg text-ink-2">{t.servicesIntro}</p>
-              {specialty?.cover && (
-                <Link href="/uilchilgee/siding" className="group relative mt-10 block aspect-[4/3] overflow-hidden rounded-card bg-surface-2">
-                  <MediaImage
-                    photo={specialty.cover}
-                    sizes="32rem"
-                    fill
-                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none"
-                  />
-                  <span className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" aria-hidden="true" />
-                  <span className="absolute top-5 left-5 rounded-full bg-accent px-3 py-1 text-sm font-bold text-accent-ink">{t.specialty}</span>
-                  <span className="absolute inset-x-0 bottom-0 p-7 text-white">
-                    <span className="block font-display text-3xl font-bold">{serviceNames.siding}</span>
-                    <span className="mt-2 block max-w-sm text-base text-white/85">{services.siding.short}</span>
-                  </span>
-                </Link>
-              )}
-            </div>
+      {/* What he does: each work type with a photo of real work. */}
+      <section className="container-page mt-24 md:mt-36" aria-labelledby="services">
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-x-8 gap-y-4 lg:mb-14">
+          <div className="max-w-2xl">
+            <h2 id="services" className="text-4xl font-bold md:text-6xl">
+              {t.servicesTitle}
+            </h2>
+            <p className="mt-4 text-lg text-ink-2">{t.servicesIntro}</p>
           </div>
-          <ol className="border-t border-line lg:col-span-7">
-            {SERVICE_SLUGS.map((s, i) => (
-              <li key={s} className="border-b border-line">
-                <Link
-                  href={`/uilchilgee/${s}`}
-                  className="group grid grid-cols-[3.5rem_1fr_auto] items-center gap-4 py-7 transition-colors duration-200 hover:bg-surface/70"
-                >
-                  <span className="pl-2 font-display text-sm font-bold text-accent tabular">{String(i + 1).padStart(2, "0")}</span>
-                  <span>
-                    <span className="block font-display text-[1.75rem] leading-tight font-bold">{serviceNames[s]}</span>
-                    <span className="mt-1 block text-base text-ink-2">{services[s].short}</span>
-                  </span>
-                  <span className="mr-2 grid size-12 place-items-center rounded-full border border-line transition-[background-color,border-color,color,transform] duration-200 group-hover:translate-x-1 group-hover:border-ink group-hover:bg-ink group-hover:text-bg">
-                    <IconArrowRight size={20} />
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ol>
+          <SectionLink href="/uilchilgee">{t.servicesAll}</SectionLink>
         </div>
+        <ServiceShowcase
+          countLabel={t.workCount}
+          emptyLabel={t.noWorkYet}
+          // Only types with a photo of real work; the services page lists them all.
+          items={showcase
+            .filter((s) => s.cover)
+            .map((s) => ({ slug: s.slug, name: serviceNames[s.slug], short: services[s.slug].short, count: s.count, cover: s.cover }))}
+        />
       </section>
 
-      {/* Featured projects. Desktop bento: one large, one wide, two small. */}
+      {/* His highlighted works, in his order. Desktop bento: large, wide, two small. */}
       {featured.length > 0 && (
-        <section className="container-page mt-24 md:mt-32" aria-labelledby="featured">
-          <SectionHead id="featured" title={t.featuredTitle} href="/tusul" linkLabel={t.featuredAll} />
-          <ul className={`mt-8 grid gap-4 md:grid-cols-2 md:gap-6 ${featured.length === 4 ? "lg:auto-rows-[17rem] lg:grid-cols-4" : ""}`}>
+        <section className="container-page mt-24 md:mt-36" aria-labelledby="featured">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <h2 id="featured" className="text-4xl font-bold md:text-6xl">
+              {t.featuredTitle}
+            </h2>
+            <SectionLink href="/ajluud">{t.featuredAll}</SectionLink>
+          </div>
+          <ul className={`grid gap-4 md:grid-cols-2 md:gap-6 ${featured.length === 4 ? "lg:auto-rows-[17rem] lg:grid-cols-4" : ""}`}>
             {featured.map((p, i) => {
               const bento = featured.length === 4;
               const cell = !bento ? "" : i === 0 ? "lg:col-span-2 lg:row-span-2" : i === 1 ? "lg:col-span-2" : "";
@@ -155,24 +123,47 @@ export default async function Home() {
         </section>
       )}
 
-      {/* How it works */}
-      <section className="container-page mt-24 md:mt-32" aria-labelledby="how">
-        <h2 id="how" className="text-3xl font-bold md:text-5xl">
+      {/* The person behind the work. */}
+      <section className="container-page mt-24 md:mt-36" aria-labelledby="about">
+        <div className={`grid items-center gap-8 md:gap-14 ${portrait ? "md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]" : ""}`}>
+          {portrait && (
+            <div className="relative aspect-[4/5] overflow-hidden rounded-card bg-surface-2">
+              <MediaImage photo={portrait} sizes="(min-width: 768px) 32rem, 100vw" fill className="object-cover" />
+            </div>
+          )}
+          <div className="max-w-2xl">
+            <h2 id="about" className="text-4xl leading-[1.05] font-bold md:text-6xl">
+              {aboutData.headline || about.defaultHeadline}
+            </h2>
+            <p className="mt-6 text-lg leading-relaxed text-ink-2 md:text-xl">{aboutLead}</p>
+            <Link
+              href="/minii-tukhai"
+              className="mt-8 inline-flex min-h-14 items-center rounded-full border border-line px-7 text-lg font-semibold transition-colors duration-150 hover:border-ink-2"
+            >
+              {nav.about}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* How it works: a real sequence, so it is numbered. */}
+      <section className="container-page mt-24 md:mt-36" aria-labelledby="how">
+        <h2 id="how" className="text-4xl font-bold md:text-6xl">
           {t.howTitle}
         </h2>
-        <ol className="mt-10 grid gap-4 md:grid-cols-3">
+        <ol className="mt-10 grid gap-10 md:grid-cols-3 md:gap-8">
           {t.steps.map((step, i) => (
-            <li key={step.title} className="rounded-card bg-surface-2 p-6 md:p-8">
-              <span className="font-display text-6xl leading-none font-extrabold text-accent tabular">{i + 1}</span>
-              <h3 className="mt-8 text-2xl font-bold">{step.title}</h3>
-              <p className="mt-3 text-lg text-ink-2">{step.body}</p>
+            <li key={step.title} className="border-t-2 border-ink pt-6">
+              <span className="font-display text-5xl leading-none font-extrabold text-accent tabular">{i + 1}</span>
+              <h3 className="mt-6 text-2xl font-bold">{step.title}</h3>
+              <p className="mt-3 max-w-sm text-lg text-ink-2">{step.body}</p>
             </li>
           ))}
         </ol>
       </section>
 
       {/* Contact: text first, never a phone call. */}
-      <section className="container-page mt-24 md:mt-32" aria-labelledby="contact">
+      <section className="container-page mt-24 md:mt-36" aria-labelledby="contact">
         <div className="grid gap-8 rounded-card bg-ink p-6 text-bg md:grid-cols-2 md:items-end md:p-14">
           <div>
             <h2 id="contact" className="text-3xl leading-tight font-bold md:text-5xl">
@@ -229,16 +220,10 @@ export default async function Home() {
   );
 }
 
-function SectionHead({ id, title, href, linkLabel }: { id: string; title: string; href: string; linkLabel: string }) {
+function SectionLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-end justify-between gap-4">
-      <h2 id={id} className="text-3xl font-bold md:text-5xl">
-        {title}
-      </h2>
-      <Link href={href} className="inline-flex min-h-11 shrink-0 items-center gap-1.5 font-semibold text-accent">
-        {linkLabel}
-        <IconArrowRight size={20} />
-      </Link>
-    </div>
+    <Link href={href} className="inline-flex min-h-11 shrink-0 items-center text-lg font-semibold text-accent underline decoration-2 underline-offset-[6px] hover:decoration-accent/40">
+      {children}
+    </Link>
   );
 }

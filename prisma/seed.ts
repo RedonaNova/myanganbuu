@@ -58,7 +58,7 @@ const projects: SeedProject[] = [
       "Телевизийн ханыг гантиг хээтэй хавтан, босоо хана панелаар өнгөлж, панелийн ард LED гэрэлтүүлэг оруулсан. Доор нь өрөөнд тааруулж хийсэн өлгөөтэй тавиур суурилуулсан.\n\n" +
       "Хананы хоёр талд ханын гэрэл гаргаж, утсыг бүгдийг нь хананд нуусан.",
     room: "LIVING",
-    services: ["panels", "furniture", "electrical"],
+    services: ["tv-wall", "furniture", "electrical"],
     featured: true,
     pairs: [],
     photos: [{ file: "stenk-selfmade.jpg", alt: "Зочны өрөө: гантиг хээтэй ТВ хана, босоо панел, LED гэрэл, өлгөөтэй тавиур" }],
@@ -70,7 +70,7 @@ const projects: SeedProject[] = [
       "Шалыг хуулж, усны болон бохирын шугамыг шинээр татсан. Шүршүүрийн хэсэгт ус зайлуулах налуу гаргаж, шалыг хавтангаар тавьсан.\n\n" +
       "Хананд гантиг хээтэй цагаан хавтан, шүршүүрийн холигч суурилуулсан.",
     room: "BATHROOM",
-    services: ["plumbing", "tiling"],
+    services: ["bathroom"],
     featured: true,
     pairs: [
       {
@@ -215,6 +215,30 @@ async function seedProjects() {
   }
 }
 
+/** His highlight list, in seed order, unless he has already chosen one. */
+async function seedFeatured() {
+  const existing = await prisma.setting.findUnique({ where: { key: "featuredProjectIds" } });
+  if (existing?.value) return console.log("· featured works already chosen, left as is");
+  const featured = await prisma.project.findMany({
+    where: { featured: true, published: true },
+    orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
+    take: 4,
+  });
+  const value = featured.map((p) => p.id).join(",");
+  await prisma.setting.upsert({ where: { key: "featuredProjectIds" }, create: { key: "featuredProjectIds", value }, update: { value } });
+  console.log(`✓ ${featured.length} featured works`);
+}
+
+/** A starting photo for the about page until he uploads his own. */
+async function seedAboutPhoto() {
+  if ((await prisma.sitePhoto.count()) > 0) return console.log("· about photos already added, left as is");
+  const image = await processImage(await readFile(path.join(IMAGES, "in-progress-siding.jpg")), "public");
+  await prisma.sitePhoto.create({
+    data: { ...image, alt: "Хаусны фасадыг сайдингаар бүрж буй үе, барилгын шат", caption: "Ажлын үеэр" },
+  });
+  console.log("✓ about page photo");
+}
+
 async function seedRates() {
   if ((await prisma.rateItem.count()) > 0) return console.log("· rate card already filled, left as is");
   await prisma.rateItem.createMany({ data: rateItems.map((r, i) => ({ ...r, sortOrder: i })) });
@@ -257,6 +281,8 @@ async function seedQuote() {
 }
 
 await seedProjects();
+await seedFeatured();
+await seedAboutPhoto();
 await seedRates();
 await seedQuote();
 await prisma.$disconnect();

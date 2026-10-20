@@ -28,7 +28,7 @@ export function ProjectCard({
 
   return (
     <Link
-      href={`/tusul/${project.slug}`}
+      href={`/ajluud/${project.slug}`}
       className={
         "group relative isolate block overflow-hidden rounded-card bg-surface-2 " +
         "aspect-[4/5] sm:aspect-[5/4] " + (fillCell ? "lg:aspect-auto lg:h-full" : "")
@@ -37,9 +37,9 @@ export function ProjectCard({
       {project.cover && (
         <MediaImage photo={project.cover} alt={project.cover.alt} sizes={sizes} fill priority={priority} className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none" />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" aria-hidden="true" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 via-45% to-transparent" aria-hidden="true" />
       <div className="absolute inset-x-0 bottom-0 p-5 text-white md:p-7">
-        <p className="text-sm font-semibold tracking-[0.12em] text-white/80 uppercase">{rooms[project.room]}</p>
+        <p className="text-sm font-semibold text-white/80">{rooms[project.room]}</p>
         <h3 className="mt-2 font-display text-2xl leading-tight font-bold text-balance md:text-[1.75rem]">{project.title}</h3>
         {facts.length > 0 && (
           <ul className="mt-4 flex flex-wrap gap-2">

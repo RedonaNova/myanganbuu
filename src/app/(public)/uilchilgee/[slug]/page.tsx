@@ -4,6 +4,8 @@ import { SERVICE_SLUGS, isServiceSlug } from "@/lib/catalog";
 import { getProjectsByService } from "@/lib/queries";
 import { services } from "@/content/services";
 import { ProjectCard } from "@/components/site/project-card";
+import { MediaImage } from "@/components/media-image";
+import Link from "next/link";
 import { CtaBand } from "@/components/site/cta-band";
 import { serviceNames, servicesPage as t } from "@/messages/mn";
 
@@ -26,13 +28,23 @@ export default async function ServicePage({ params }: PageProps<"/uilchilgee/[sl
   if (!isServiceSlug(slug)) notFound();
   const s = services[slug];
   const related = await getProjectsByService(slug);
+  const hero = related[0]?.cover ?? null;
 
   return (
     <>
       <article className="container-page pt-10 md:pt-16">
-        <p className="text-sm font-bold tracking-[0.14em] text-accent uppercase">{t.title}</p>
-        <h1 className="mt-4 text-[2.5rem] leading-[1.05] font-bold md:text-7xl">{serviceNames[slug]}</h1>
-        <p className="mt-6 max-w-3xl text-xl leading-relaxed md:text-2xl">{s.intro}</p>
+        <Link href="/uilchilgee" className="text-base font-semibold text-ink-2 underline-offset-4 hover:text-ink hover:underline">
+          {t.title}
+        </Link>
+        <h1 className="mt-2 text-[2.5rem] leading-[1.05] font-bold md:text-7xl">{serviceNames[slug]}</h1>
+        <div className={`mt-8 grid gap-8 md:mt-12 md:gap-12 ${hero ? "lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)] lg:items-start" : ""}`}>
+          <p className="max-w-3xl text-xl leading-relaxed md:text-2xl">{s.intro}</p>
+          {hero && (
+            <Link href={`/ajluud/${related[0].slug}`} className="group relative block aspect-[4/3] overflow-hidden rounded-card bg-surface-2">
+              <MediaImage photo={hero} sizes="(min-width: 1024px) 34rem, 100vw" fill priority className="object-cover" />
+            </Link>
+          )}
+        </div>
 
         <div className="mt-14 grid gap-4 md:mt-20 md:grid-cols-2">
           <section className="rounded-card border border-line bg-surface p-6 md:p-8" aria-labelledby="includes">
@@ -77,9 +89,14 @@ export default async function ServicePage({ params }: PageProps<"/uilchilgee/[sl
 
       {related.length > 0 && (
         <section className="container-page mt-20" aria-labelledby="related">
-          <h2 id="related" className="text-3xl font-bold md:text-4xl">
-            {t.related}
-          </h2>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <h2 id="related" className="text-3xl font-bold md:text-4xl">
+              {t.related}
+            </h2>
+            <Link href={`/ajluud/torol/${slug}`} className="inline-flex min-h-11 items-center text-lg font-semibold text-accent underline decoration-2 underline-offset-[6px]">
+              {t.allOfType}
+            </Link>
+          </div>
           <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 md:gap-6">
             {related.map((p) => (
               <li key={p.slug}>

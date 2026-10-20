@@ -21,6 +21,9 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async redirects() {
+    return [{ source: "/tusul/:path*", destination: "/ajluud/:path*", permanent: true }];
+  },
   async headers() {
     return [
       {

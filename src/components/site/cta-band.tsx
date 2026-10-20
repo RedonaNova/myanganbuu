@@ -8,7 +8,6 @@ export async function CtaBand({ title, body }: { title: string; body: string }) 
   return (
     <section className="container-page mt-24">
       <div className="relative overflow-hidden rounded-card bg-ink px-6 py-12 text-bg md:px-14 md:py-16">
-        <div aria-hidden="true" className="absolute -top-24 -right-24 size-72 rounded-full bg-accent/30 blur-3xl" />
         <h2 className="relative max-w-2xl text-3xl leading-tight font-bold md:text-5xl">{title}</h2>
         <p className="relative mt-4 max-w-xl text-lg text-bg/75">{body}</p>
         <div className="relative mt-8 flex flex-col gap-3 sm:flex-row">

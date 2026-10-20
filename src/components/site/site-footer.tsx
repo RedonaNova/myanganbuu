@@ -22,7 +22,7 @@ export async function SiteFooter() {
         </div>
 
         <div>
-          <h2 className="text-sm font-bold tracking-[0.14em] text-ink-2 uppercase">{t.contactTitle}</h2>
+          <h2 className="text-base font-bold">{t.contactTitle}</h2>
           <p className="mt-4 max-w-xs text-base text-ink-2">{t.textFirst}</p>
           <ul className="mt-5 space-y-1 text-lg font-semibold">
             <li>
@@ -42,11 +42,16 @@ export async function SiteFooter() {
                 {t.form}
               </Link>
             </li>
+            <li>
+              <Link href="/minii-tukhai" className="inline-flex min-h-11 items-center hover:text-accent">
+                {nav.about}
+              </Link>
+            </li>
           </ul>
         </div>
 
         <div>
-          <h2 className="text-sm font-bold tracking-[0.14em] text-ink-2 uppercase">{nav.services}</h2>
+          <h2 className="text-base font-bold">{nav.services}</h2>
           <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-1 text-base md:grid-cols-1">
             {SERVICE_SLUGS.map((s) => (
               <li key={s}>

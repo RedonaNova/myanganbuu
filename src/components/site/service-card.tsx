@@ -1,23 +1,32 @@
 import Link from "next/link";
 import type { ServiceSlug } from "@/lib/catalog";
+import type { ClientPhoto } from "@/lib/photos";
+import { MediaImage } from "@/components/media-image";
 import { services } from "@/content/services";
-import { serviceNames, servicesPage } from "@/messages/mn";
-import { IconArrowRight } from "@/components/icons";
+import { home, serviceNames } from "@/messages/mn";
 
-/** Typographic card: big index number, name, one line, quiet arrow. */
-export function ServiceCard({ slug, index }: { slug: ServiceSlug; index: number }) {
+/** A work type with a photo of his newest job of that type. */
+export function ServiceCard({ slug, cover, count }: { slug: ServiceSlug; cover: ClientPhoto | null; count: number }) {
+  const countLabel = count ? `${count} ${home.workCount}` : "";
   return (
-    <Link
-      href={`/uilchilgee/${slug}`}
-      className="group flex h-full min-h-56 flex-col rounded-card border border-line bg-surface p-6 transition-[border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-ink-2 md:p-7"
-    >
-      <span className="font-display text-sm font-bold text-accent tabular">{String(index + 1).padStart(2, "0")}</span>
-      <h3 className="mt-auto pt-10 font-display text-2xl leading-tight font-bold">{serviceNames[slug]}</h3>
-      <p className="mt-2 text-base text-ink-2">{services[slug].short}</p>
-      <span className="mt-5 inline-flex items-center gap-1.5 text-base font-semibold">
-        {servicesPage.more}
-        <IconArrowRight size={18} className="transition-transform duration-200 group-hover:translate-x-1" />
-      </span>
+    <Link href={`/uilchilgee/${slug}`} className="group block">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-surface-2">
+        {cover ? (
+          <MediaImage
+            photo={cover}
+            sizes="(min-width: 1024px) 26rem, (min-width: 640px) 50vw, 100vw"
+            fill
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none"
+          />
+        ) : (
+          <span className="absolute inset-0 grid place-items-center p-6 text-center text-base text-ink-2">{home.noWorkYet}</span>
+        )}
+      </div>
+      <div className="mt-4 flex items-baseline justify-between gap-4">
+        <h2 className="font-display text-2xl leading-tight font-bold">{serviceNames[slug]}</h2>
+        {countLabel && <span className="shrink-0 text-base text-ink-2 tabular">{countLabel}</span>}
+      </div>
+      <p className="mt-1 text-base text-ink-2">{services[slug].short}</p>
     </Link>
   );
 }

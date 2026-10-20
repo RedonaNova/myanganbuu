@@ -18,7 +18,7 @@ export default function InquirySent() {
         </div>
         <h1 className="mt-8 text-4xl font-bold md:text-5xl">{t.successTitle}</h1>
         <p className="mt-4 text-lg text-ink-2 md:text-xl">{t.successBody}</p>
-        <Link href="/tusul" className="mt-10 inline-flex min-h-14 items-center rounded-full bg-ink px-7 text-lg font-semibold text-bg">
+        <Link href="/ajluud" className="mt-10 inline-flex min-h-14 items-center rounded-full bg-ink px-7 text-lg font-semibold text-bg">
           {t.successBack}
         </Link>
       </div>

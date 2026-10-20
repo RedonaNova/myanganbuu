@@ -9,12 +9,13 @@ import { BeforeAfter } from "@/components/before-after";
 import { galleryLabels, shareLabels, sliderLabels } from "@/lib/labels";
 import { Gallery } from "@/components/gallery";
 import { ShareButton } from "@/components/share-button";
+import { FacebookShare } from "@/components/facebook-share";
 import { ProjectCard } from "@/components/site/project-card";
 import { CtaBand } from "@/components/site/cta-band";
 import { IconArrowRight } from "@/components/icons";
-import { projectPage as t, rooms, serviceNames, site } from "@/messages/mn";
+import { projectPage as t, projectsPage, rooms, serviceNames, site } from "@/messages/mn";
 
-export async function generateMetadata({ params }: PageProps<"/tusul/[slug]">): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/ajluud/[slug]">): Promise<Metadata> {
   const project = await getProject((await params).slug);
   if (!project) return {};
   const description =
@@ -23,12 +24,12 @@ export async function generateMetadata({ params }: PageProps<"/tusul/[slug]">): 
   return {
     title: project.title,
     description,
-    alternates: { canonical: `/tusul/${project.slug}` },
+    alternates: { canonical: `/ajluud/${project.slug}` },
     openGraph: { type: "article", title: project.title, description, locale: site.locale, siteName: site.name },
   };
 }
 
-export default function ProjectPage({ params }: PageProps<"/tusul/[slug]">) {
+export default function ProjectPage({ params }: PageProps<"/ajluud/[slug]">) {
   return (
     <Suspense fallback={<DetailSkeleton />}>
       <ProjectContent params={params} />
@@ -36,7 +37,7 @@ export default function ProjectPage({ params }: PageProps<"/tusul/[slug]">) {
   );
 }
 
-async function ProjectContent({ params }: Pick<PageProps<"/tusul/[slug]">, "params">) {
+async function ProjectContent({ params }: Pick<PageProps<"/ajluud/[slug]">, "params">) {
   const project = await getProject((await params).slug);
   if (!project) notFound();
 
@@ -137,8 +138,20 @@ function ProjectHeader({ project }: { project: ProjectDetail }) {
 
   return (
     <header className="container-page pt-10 md:pt-16">
-      <p className="text-sm font-bold tracking-[0.14em] text-accent uppercase">{rooms[project.room]}</p>
-      <h1 className="mt-4 max-w-4xl text-[2.25rem] leading-[1.08] font-bold md:text-6xl">{project.title}</h1>
+      <nav aria-label={projectsPage.title} className="flex flex-wrap gap-x-2 text-base font-semibold text-ink-2">
+        <Link href="/ajluud" className="underline-offset-4 hover:text-ink hover:underline">
+          {projectsPage.title}
+        </Link>
+        {project.services[0] && (
+          <>
+            <span aria-hidden="true">{"/"}</span>
+            <Link href={`/ajluud/torol/${project.services[0]}`} className="underline-offset-4 hover:text-ink hover:underline">
+              {serviceNames[project.services[0]]}
+            </Link>
+          </>
+        )}
+      </nav>
+      <h1 className="mt-3 max-w-4xl text-[2.25rem] leading-[1.08] font-bold md:text-6xl">{project.title}</h1>
 
       {facts.length > 0 && (
         <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-4">
@@ -155,17 +168,24 @@ function ProjectHeader({ project }: { project: ProjectDetail }) {
         {project.services.map((s) => (
           <Link
             key={s}
-            href={`/uilchilgee/${s}`}
+            href={`/ajluud/torol/${s}`}
             className="inline-flex min-h-10 items-center rounded-full border border-line px-4 text-base font-semibold transition-colors duration-150 hover:border-ink-2"
           >
             {serviceNames[s]}
           </Link>
         ))}
-        <ShareButton
-          title={project.title}
-          labels={shareLabels}
-          className="ml-auto inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-base font-semibold text-ink-2 transition-colors duration-150 hover:text-ink"
-        />
+        <span className="ml-auto flex flex-wrap gap-1">
+          <FacebookShare
+            url={`${process.env.SITE_URL ?? ""}/ajluud/${project.slug}`}
+            label={t.shareFacebook}
+            className="inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-base font-semibold text-ink-2 transition-colors duration-150 hover:text-ink"
+          />
+          <ShareButton
+            title={project.title}
+            labels={shareLabels}
+            className="inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-base font-semibold text-ink-2 transition-colors duration-150 hover:text-ink"
+          />
+        </span>
       </div>
     </header>
   );
@@ -204,7 +224,7 @@ async function MoreProjects({ slug }: { slug: string }) {
         <h2 id="more" className="text-3xl font-bold md:text-4xl">
           {t.more}
         </h2>
-        <Link href="/tusul" className="inline-flex min-h-11 items-center gap-2 font-semibold text-accent">
+        <Link href="/ajluud" className="inline-flex min-h-11 items-center gap-2 font-semibold text-accent">
           {t.allProjects}
           <IconArrowRight size={20} />
         </Link>
