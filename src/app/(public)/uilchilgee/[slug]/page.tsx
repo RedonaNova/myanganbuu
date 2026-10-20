@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { SERVICE_SLUGS, isServiceSlug } from "@/lib/catalog";
 import { getProjectsByService } from "@/lib/queries";
 import { services } from "@/content/services";
@@ -23,7 +24,16 @@ export async function generateMetadata({ params }: PageProps<"/uilchilgee/[slug]
   };
 }
 
-export default async function ServicePage({ params }: PageProps<"/uilchilgee/[slug]">) {
+// params is URL data: read it inside Suspense so the shared page shell stays instant.
+export default function ServicePage({ params }: PageProps<"/uilchilgee/[slug]">) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <ServiceContent params={params} />
+    </Suspense>
+  );
+}
+
+async function ServiceContent({ params }: Pick<PageProps<"/uilchilgee/[slug]">, "params">) {
   const { slug } = await params;
   if (!isServiceSlug(slug)) notFound();
   const s = services[slug];
@@ -109,5 +119,19 @@ export default async function ServicePage({ params }: PageProps<"/uilchilgee/[sl
 
       <CtaBand title={t.ctaTitle} body={t.ctaBody} />
     </>
+  );
+}
+
+function PageSkeleton() {
+  return (
+    <div className="container-page animate-pulse pt-10 md:pt-16" aria-hidden="true">
+      <div className="h-4 w-28 rounded bg-surface-2" />
+      <div className="mt-5 h-14 w-2/3 rounded-xl bg-surface-2" />
+      <div className="mt-6 h-6 w-1/2 rounded bg-surface-2" />
+      <div className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="aspect-[4/5] rounded-card bg-surface-2 sm:aspect-[5/4]" />
+        <div className="hidden aspect-[5/4] rounded-card bg-surface-2 sm:block" />
+      </div>
+    </div>
   );
 }
