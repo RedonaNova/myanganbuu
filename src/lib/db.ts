@@ -10,7 +10,11 @@ const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 // database user's connection limit. Routes that started last then waited 10
 // seconds for a connection and failed (blank social previews, slow uploads).
 // Now every copy shares one small pool and connections are opened on demand.
-const POOL = { connectionLimit: "5", minimumIdle: "1", idleTimeout: "120" };
+// `next build` prerenders in several worker processes, each with its own
+// pool, while the live site is still running on the same server. Keep the
+// build's share small so it never competes for the user's connection limit.
+const building = process.env.NEXT_PHASE === "phase-production-build";
+const POOL = building ? { connectionLimit: "3", minimumIdle: "0", idleTimeout: "30" } : { connectionLimit: "5", minimumIdle: "1", idleTimeout: "120" };
 
 function withPoolSettings(url: string) {
   const [base, query = ""] = url.split("?");
