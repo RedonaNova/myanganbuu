@@ -215,7 +215,7 @@ const rateItems: {
   },
   { label: "Ламинат шал тавих", unit: "м²", unitPrice: 15000, category: "Шал" },
   {
-    label: "Суналтын тааз татах",
+    label: "Уналттай тааз татах",
     unit: "м²",
     unitPrice: 30000,
     category: "Тааз",
