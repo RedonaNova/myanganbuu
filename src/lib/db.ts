@@ -4,23 +4,33 @@ import { PrismaClient } from "@/generated/prisma/client";
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-// The driver's defaults are a pool of 10 connections, all opened up front and
-// kept. Next.js loads this module separately for pages, cached functions and
-// image routes, so each copy used to open its own 10 and together they hit the
-// database user's connection limit. Routes that started last then waited 10
-// seconds for a connection and failed (blank social previews, slow uploads).
-// Now every copy shares one small pool and connections are opened on demand.
-// `next build` prerenders in several worker processes, each with its own
-// pool, while the live site is still running on the same server. Keep the
-// build's share small so it never competes for the user's connection limit.
+// Pool settings. The driver defaults to 10 connections per client, all opened
+// up front, and gives up on any new connection after 1 second. Next.js loads
+// this module separately for pages, cached functions and image routes, so each
+// copy opened its own 10, and on a busy small server a connection that took
+// longer than 1 second to open failed and was retried until the pool's own
+// 10 second limit ran out (blank social previews, failed uploads, failed builds).
+// Now every copy shares one small pool, and a new connection may take up to 8s.
+//
+// `next build` prerenders in several worker processes while the live site
+// still runs on the same server, so the build keeps a smaller share.
 const building = process.env.NEXT_PHASE === "phase-production-build";
-const POOL = building ? { connectionLimit: "3", minimumIdle: "0", idleTimeout: "30" } : { connectionLimit: "5", minimumIdle: "1", idleTimeout: "120" };
+const POOL = {
+  connectionLimit: building ? "3" : "5",
+  minimumIdle: "1",
+  idleTimeout: "300",
+  connectTimeout: "8000",
+};
 
 function withPoolSettings(url: string) {
-  const [base, query = ""] = url.split("?");
-  const params = new URLSearchParams(query);
-  for (const [key, value] of Object.entries(POOL)) if (!params.has(key)) params.set(key, value);
-  return `${base}?${params}`;
+  try {
+    // Same parser the adapter uses, so odd characters in the password survive.
+    const parsed = new URL(url);
+    for (const [key, value] of Object.entries(POOL)) if (!parsed.searchParams.has(key)) parsed.searchParams.set(key, value);
+    return parsed.toString();
+  } catch {
+    return url;
+  }
 }
 
 function createClient() {
