@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { cacheLife, cacheTag } from "next/cache";
-import { getSettings, instagramLink, viberLink } from "@/lib/settings";
-import { SERVICE_SLUGS } from "@/lib/catalog";
+import { getSettings, instagramLink, showcaseOrder, viberLink } from "@/lib/settings";
 import { FacebookIcon, INSTAGRAM, InstagramIcon, ViberIcon } from "@/components/site/contact";
 import { contact, footer as t, nav, serviceNames, site } from "@/messages/mn";
 
@@ -66,7 +65,7 @@ export async function SiteFooter() {
         <div>
           <h2 className="text-base font-bold">{nav.services}</h2>
           <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-1 text-base md:grid-cols-1">
-            {SERVICE_SLUGS.map((s) => (
+            {showcaseOrder(settings).filter((o) => !o.hidden).map(({ slug: s }) => (
               <li key={s}>
                 <Link href={`/uilchilgee/${s}`} className="inline-flex min-h-10 items-center text-ink-2 hover:text-ink">
                   {serviceNames[s]}

@@ -17,7 +17,7 @@ type Project = {
 
 const MAX = 4;
 
-type ShowcaseItem = { slug: string; photoId: number | null };
+type ShowcaseItem = { slug: string; photoId: number | null; hidden: boolean };
 type Photo = { id: number; projectId: number; src: string; width: number; height: number; lqip: string };
 
 /** One screen for everything on the home page he controls. */
@@ -93,13 +93,13 @@ export function HomeEditor(props: {
             const picked = item.photoId ? photoById.get(item.photoId) : undefined;
             const shown = picked ?? works[0]?.cover;
             return (
-              <li key={item.slug} className={`rounded-2xl border border-line bg-bg p-3 ${works.length ? "" : "opacity-60"}`}>
+              <li key={item.slug} className="rounded-2xl border border-line bg-bg p-3">
                 <div className="flex items-center gap-3">
                   <span className="w-5 shrink-0 text-center font-display text-lg font-bold text-accent tabular">{i + 1}</span>
-                  <span className="relative size-14 shrink-0 overflow-hidden rounded-xl bg-surface-2">
+                  <span className={`relative size-14 shrink-0 overflow-hidden rounded-xl bg-surface-2 ${item.hidden ? "opacity-40" : ""}`}>
                     {shown && <MediaImage photo={shown} sizes="56px" fill className="object-cover" />}
                   </span>
-                  <span className="min-w-0 flex-1 text-base leading-snug font-semibold">{props.typeNames[item.slug]}</span>
+                  <span className={`min-w-0 flex-1 text-base leading-snug font-semibold ${item.hidden ? "text-ink-2" : ""}`}>{props.typeNames[item.slug]}</span>
                   <IconButton label={admin.photos.moveUp} disabled={i === 0} onClick={() => moveType(i, -1)}>
                     <IconChevronUp />
                   </IconButton>
@@ -107,27 +107,32 @@ export function HomeEditor(props: {
                     <IconChevronDown />
                   </IconButton>
                 </div>
-                {works.length ? (
-                  <div className="mt-2 flex items-center justify-between gap-3 border-t border-line pt-2">
-                    <span className="min-w-0 text-sm text-ink-2">{picked ? null : t.showcaseAuto}</span>
-                    <span className="flex shrink-0 gap-1">
-                      {picked && (
-                        <button
-                          type="button"
-                          onClick={() => setShowcaseDirty(showcase.map((x) => (x.slug === item.slug ? { ...x, photoId: null } : x)))}
-                          className="min-h-11 px-3 text-base font-semibold text-ink-2"
-                        >
-                          {t.remove}
-                        </button>
-                      )}
-                      <button type="button" onClick={() => setPicking(item.slug)} className="min-h-11 rounded-full border border-line px-4 text-base font-semibold">
-                        {picked ? t.showcaseChange : t.showcasePick}
+                <div className="mt-2 flex flex-wrap items-center justify-between gap-x-3 border-t border-line pt-2">
+                  <label className="flex min-h-11 cursor-pointer items-center gap-2.5 text-base font-semibold">
+                    <input
+                      type="checkbox"
+                      checked={!item.hidden}
+                      onChange={(e) => setShowcaseDirty(showcase.map((x) => (x.slug === item.slug ? { ...x, hidden: !e.target.checked } : x)))}
+                      className="size-5 accent-[var(--accent)]"
+                    />
+                    {t.showcaseShow}
+                  </label>
+                  <span className="flex shrink-0 gap-1">
+                    {picked && (
+                      <button
+                        type="button"
+                        onClick={() => setShowcaseDirty(showcase.map((x) => (x.slug === item.slug ? { ...x, photoId: null } : x)))}
+                        className="min-h-11 px-3 text-base font-semibold text-ink-2"
+                      >
+                        {t.remove}
                       </button>
-                    </span>
-                  </div>
-                ) : (
-                  <p className="mt-2 border-t border-line pt-2 text-sm text-ink-2">{t.showcaseNone}</p>
-                )}
+                    )}
+                    <button type="button" onClick={() => setPicking(item.slug)} className="min-h-11 rounded-full border border-line px-4 text-base font-semibold">
+                      {picked ? t.showcaseChange : t.showcasePick}
+                    </button>
+                  </span>
+                </div>
+                {works.length === 0 && !picked && <p className="text-sm text-ink-2">{t.showcaseNone}</p>}
               </li>
             );
           })}

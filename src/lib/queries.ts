@@ -96,7 +96,7 @@ export async function getServiceShowcase() {
   "use cache";
   cacheLife("days");
   cacheTag("projects", "settings");
-  const order = showcaseOrder(await getSettings());
+  const order = showcaseOrder(await getSettings()).filter((o) => !o.hidden);
   const pickedIds = order.flatMap((o) => (o.photoId ? [o.photoId] : []));
   const picked = pickedIds.length
     ? await db.photo.findMany({ where: { id: { in: pickedIds }, project: { published: true } } })

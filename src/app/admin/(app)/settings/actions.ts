@@ -36,13 +36,13 @@ export async function saveSettings(_prev: SettingsState, formData: FormData): Pr
 
 // ─── Home page ───────────────────────────────────────────────────────────
 
-export async function saveHome(input: { heroProjectId: string; featured: number[]; showcase: { slug: string; photoId: number | null }[] }) {
+export async function saveHome(input: { heroProjectId: string; featured: number[]; showcase: { slug: string; photoId: number | null; hidden: boolean }[] }) {
   await requireAdmin();
   const d = z
     .object({
       heroProjectId: z.string().regex(/^\d*$/),
       featured: z.array(z.number().int().positive()).max(4),
-      showcase: z.array(z.object({ slug: z.enum(SERVICE_SLUGS), photoId: z.number().int().positive().nullable() })).max(SERVICE_SLUGS.length),
+      showcase: z.array(z.object({ slug: z.enum(SERVICE_SLUGS), photoId: z.number().int().positive().nullable(), hidden: z.boolean() })).max(SERVICE_SLUGS.length),
     })
     .parse(input);
   await putSetting("heroProjectId", d.heroProjectId);

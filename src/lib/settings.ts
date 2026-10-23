@@ -13,8 +13,9 @@ export const SETTING_DEFAULTS = {
   heroProjectId: "",
   // Comma-separated project ids, in display order (max 4).
   featuredProjectIds: "",
-  // «Юу хийдэг вэ»: JSON list of { slug, photoId } in his order. photoId is
-  // any photo he uploaded; null means the newest work's cover.
+  // «Юу хийдэг вэ»: JSON list of { slug, photoId, hidden } in his order.
+  // photoId is any photo he uploaded (null: the newest work's cover);
+  // hidden types are left out of the home page, chips, services page and footer.
   showcase: "",
   aboutHeadline: "",
   aboutBio: "",
@@ -77,9 +78,12 @@ export function aboutStats(s: Settings): AboutStat[] {
   }
 }
 
-export type ShowcaseItem = { slug: ServiceSlug; photoId: number | null };
+export type ShowcaseItem = { slug: ServiceSlug; photoId: number | null; hidden: boolean };
 
-/** Every work type in his order (types he never placed go last) with his picked photo. */
+/** Shown by default, in this order. The other types start hidden until he turns them on. */
+export const DEFAULT_SHOWCASE: readonly ServiceSlug[] = ["siding", "renovation", "tv-wall", "bathroom", "electrical"];
+
+/** Every work type in his order with his picked photo and whether it is hidden from the site. */
 export function showcaseOrder(s: Settings): ShowcaseItem[] {
   let saved: unknown = [];
   try {
@@ -90,8 +94,11 @@ export function showcaseOrder(s: Settings): ShowcaseItem[] {
   const items: ShowcaseItem[] = [];
   for (const x of Array.isArray(saved) ? saved : []) {
     if (!x || typeof x.slug !== "string" || !isServiceSlug(x.slug) || items.some((i) => i.slug === x.slug)) continue;
-    items.push({ slug: x.slug, photoId: Number.isInteger(x.photoId) && x.photoId > 0 ? x.photoId : null });
+    items.push({ slug: x.slug, photoId: Number.isInteger(x.photoId) && x.photoId > 0 ? x.photoId : null, hidden: x.hidden === true });
   }
-  for (const slug of SERVICE_SLUGS) if (!items.some((i) => i.slug === slug)) items.push({ slug, photoId: null });
+  // Types he has not placed yet: the default five first, then the rest hidden.
+  for (const slug of [...DEFAULT_SHOWCASE, ...SERVICE_SLUGS]) {
+    if (!items.some((i) => i.slug === slug)) items.push({ slug, photoId: null, hidden: !DEFAULT_SHOWCASE.includes(slug) });
+  }
   return items;
 }
