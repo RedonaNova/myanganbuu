@@ -2,8 +2,8 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/lib/db";
 import { toClientPhoto, type ClientPhoto } from "@/lib/photos";
-import { SERVICE_SLUGS, type RoomKey, type ServiceSlug } from "@/lib/catalog";
-import { aboutStats, featuredIds, getSettings } from "@/lib/settings";
+import type { RoomKey, ServiceSlug } from "@/lib/catalog";
+import { aboutStats, featuredIds, getSettings, showcaseOrder } from "@/lib/settings";
 import { sortRooms } from "@/lib/rooms";
 import { toClientVideo, type ClientVideo } from "@/lib/videos";
 
@@ -87,15 +87,26 @@ export async function getFeaturedCards(limit = 4) {
   return (await fetchCards({}, limit)).map(toCard);
 }
 
-/** Every work type with how many published works it has and a photo of the newest. */
+/**
+ * Every work type in his order (Admin > Нүүр хуудас), with how many published
+ * works it has and the photo he picked for it (any of his photos), else the
+ * newest work's cover.
+ */
 export async function getServiceShowcase() {
   "use cache";
   cacheLife("days");
-  cacheTag("projects");
+  cacheTag("projects", "settings");
+  const order = showcaseOrder(await getSettings());
+  const pickedIds = order.flatMap((o) => (o.photoId ? [o.photoId] : []));
+  const picked = pickedIds.length
+    ? await db.photo.findMany({ where: { id: { in: pickedIds }, project: { published: true } } })
+    : [];
   return Promise.all(
-    SERVICE_SLUGS.map(async (slug) => {
+    order.map(async ({ slug, photoId }) => {
       const rows = await fetchCards({ services: { some: { serviceSlug: slug } } });
-      return { slug, count: rows.length, cover: rows[0] ? toCard(rows[0]).cover : null };
+      const photo = picked.find((p) => p.id === photoId);
+      const cover = photo ? toClientPhoto(photo) : rows[0] ? toCard(rows[0]).cover : null;
+      return { slug, count: rows.length, cover };
     }),
   );
 }

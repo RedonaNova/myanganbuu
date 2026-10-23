@@ -8,6 +8,7 @@ import { deleteImage } from "@/lib/images";
 import { notifyAdmin } from "@/lib/push";
 import { putSetting } from "@/lib/featured";
 import type { SettingKey } from "@/lib/settings";
+import { SERVICE_SLUGS } from "@/lib/catalog";
 import { adminSettings as t } from "@/messages/mn";
 
 export type SettingsState = { ok?: boolean; error?: string };
@@ -35,15 +36,17 @@ export async function saveSettings(_prev: SettingsState, formData: FormData): Pr
 
 // ─── Home page ───────────────────────────────────────────────────────────
 
-export async function saveHome(input: { heroProjectId: string; featured: number[] }) {
+export async function saveHome(input: { heroProjectId: string; featured: number[]; showcase: { slug: string; photoId: number | null }[] }) {
   await requireAdmin();
   const d = z
     .object({
       heroProjectId: z.string().regex(/^\d*$/),
       featured: z.array(z.number().int().positive()).max(4),
+      showcase: z.array(z.object({ slug: z.enum(SERVICE_SLUGS), photoId: z.number().int().positive().nullable() })).max(SERVICE_SLUGS.length),
     })
     .parse(input);
   await putSetting("heroProjectId", d.heroProjectId);
+  await putSetting("showcase", JSON.stringify(d.showcase));
   await putSetting("featuredProjectIds", d.featured.join(","));
   // Keep the per-project flag in step, so the project screen shows it too.
   await db.project.updateMany({ data: { featured: false } });

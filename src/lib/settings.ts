@@ -1,6 +1,7 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/lib/db";
+import { SERVICE_SLUGS, isServiceSlug, type ServiceSlug } from "@/lib/catalog";
 
 // Editable from Admin > Тохиргоо. Defaults apply until he changes them.
 export const SETTING_DEFAULTS = {
@@ -12,6 +13,9 @@ export const SETTING_DEFAULTS = {
   heroProjectId: "",
   // Comma-separated project ids, in display order (max 4).
   featuredProjectIds: "",
+  // «Юу хийдэг вэ»: JSON list of { slug, photoId } in his order. photoId is
+  // any photo he uploaded; null means the newest work's cover.
+  showcase: "",
   aboutHeadline: "",
   aboutBio: "",
   // JSON list of { value, label }, e.g. [{"value":"15","label":"жил туршлага"}].
@@ -71,4 +75,23 @@ export function aboutStats(s: Settings): AboutStat[] {
   } catch {
     return [];
   }
+}
+
+export type ShowcaseItem = { slug: ServiceSlug; photoId: number | null };
+
+/** Every work type in his order (types he never placed go last) with his picked photo. */
+export function showcaseOrder(s: Settings): ShowcaseItem[] {
+  let saved: unknown = [];
+  try {
+    saved = JSON.parse(s.showcase || "[]");
+  } catch {
+    // Unreadable value: fall back to the default order.
+  }
+  const items: ShowcaseItem[] = [];
+  for (const x of Array.isArray(saved) ? saved : []) {
+    if (!x || typeof x.slug !== "string" || !isServiceSlug(x.slug) || items.some((i) => i.slug === x.slug)) continue;
+    items.push({ slug: x.slug, photoId: Number.isInteger(x.photoId) && x.photoId > 0 ? x.photoId : null });
+  }
+  for (const slug of SERVICE_SLUGS) if (!items.some((i) => i.slug === slug)) items.push({ slug, photoId: null });
+  return items;
 }

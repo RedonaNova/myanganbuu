@@ -34,13 +34,31 @@ export type ProcessedImage = {
 // Phone photos are big: cap decoded size so a hostile upload can't exhaust RAM.
 const MAX_INPUT_PIXELS = 60_000_000;
 
+// The VPS is small and PM2 restarts the app above 700 MB. Encoding all eight
+// variants of several photos at once used ~450 MB on its own and could tip it
+// over, killing uploads mid-way. So: no libvips cache, a couple of threads,
+// one photo at a time, and variants encoded one after another.
+sharp.cache(false);
+sharp.concurrency(2);
+
+let queue: Promise<unknown> = Promise.resolve();
+function oneAtATime<T>(task: () => Promise<T>): Promise<T> {
+  const run = queue.then(task, task);
+  queue = run.catch(() => {});
+  return run;
+}
+
 /**
  * Normalises an uploaded photo and writes all variants to disk:
  *  - applies EXIF orientation, then strips all metadata (incl. GPS)
  *  - AVIF + WebP at each width, plus a JPEG at 1200 for OG images / PDFs
  *  - a tiny blurred WebP data URL used as the loading placeholder
  */
-export async function processImage(input: Buffer, visibility: Visibility): Promise<ProcessedImage> {
+export function processImage(input: Buffer, visibility: Visibility): Promise<ProcessedImage> {
+  return oneAtATime(() => encode(input, visibility));
+}
+
+async function encode(input: Buffer, visibility: Visibility): Promise<ProcessedImage> {
   const base = sharp(input, { failOn: "error", limitInputPixels: MAX_INPUT_PIXELS })
     .rotate() // honour EXIF orientation
     .toColourspace("srgb");
@@ -56,19 +74,12 @@ export async function processImage(input: Buffer, visibility: Visibility): Promi
   await mkdir(dir, { recursive: true });
 
   try {
-    await Promise.all(
-      WIDTHS.flatMap((w) => {
-        const resized = () => sharp(master).resize({ width: w, withoutEnlargement: true });
-        return [
-          resized()
-            .avif({ quality: 55, effort: 4 })
-            .toFile(path.join(dir, `${w}.avif`)),
-          resized()
-            .webp({ quality: 78, effort: 4 })
-            .toFile(path.join(dir, `${w}.webp`)),
-        ];
-      }),
-    );
+    for (const w of WIDTHS) {
+      const resized = () => sharp(master).resize({ width: w, withoutEnlargement: true });
+      // effort 2: several times faster than the default with near-identical size.
+      await resized().avif({ quality: 55, effort: 2 }).toFile(path.join(dir, `${w}.avif`));
+      await resized().webp({ quality: 78, effort: 4 }).toFile(path.join(dir, `${w}.webp`));
+    }
     await sharp(master)
       .resize({ width: 1200, withoutEnlargement: true })
       .jpeg({ quality: 82, mozjpeg: true })

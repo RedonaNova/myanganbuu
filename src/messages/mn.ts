@@ -64,11 +64,11 @@ export const districts = [
 export const serviceNames = {
   siding: "Гадна фасад, сайдинг, террас",
   renovation: "Байрны бүтэн засал",
-  bathroom: "Угаалгын өрөө, сантехник",
   "tv-wall": "Стенк, ТВ хана",
+  bathroom: "Угаалгын өрөө, сантехник",
   furniture: "Захиалгат тавилга",
   electrical: "Цахилгаан, гэрэлтүүлэг",
-  "stretch-ceiling": "Суналтын тааз",
+  "stretch-ceiling": "Уналттай тааз",
 } as const;
 
 export const inquiryStatuses = {
@@ -145,12 +145,14 @@ export const admin = {
   videos: {
     title: "Видео",
     upload: "Видео нэмэх",
-    uploadHint: "MP4 эсвэл MOV, 500 МБ хүртэл. Том видео удаан илгээгдэнэ, Wi-Fi ашиглавал дээр.",
+    uploadHint:
+      "MP4 эсвэл MOV, 500 МБ хүртэл. Том видео удаан илгээгдэнэ, Wi-Fi ашиглавал дээр.",
     uploading: "Илгээж байна",
     poster: "Нүүр зураг бэлтгэж байна",
     failed: "Амжилтгүй",
     tooBig: "Видео хэт том байна (500 МБ-аас их).",
-    unsupported: "Энэ видеоны төрлийг хүлээж авахгүй. MP4 эсвэл MOV сонгоно уу.",
+    unsupported:
+      "Энэ видеоны төрлийг хүлээж авахгүй. MP4 эсвэл MOV сонгоно уу.",
     noPoster: "Нүүр зураггүй",
     caption: "Тайлбар",
     captionPlaceholder: "Жишээ нь: Хананы дулаалга хэрхэн хийгддэг",
@@ -587,6 +589,14 @@ export const adminHome = {
   addFeatured: "Онцлох ажилд нэмэх",
   remove: "Хасах",
   full: "4 ажил сонгосон байна. Нэмэхийн тулд нэгийг хасна уу.",
+  showcaseTitle: "Юу хийдэг вэ",
+  showcaseHint:
+    "Төрөл бүрт харагдах зургийг өөрийн оруулсан бүх зургаас сонгоно. Сумаар дарааллыг солино. Энэ дараалал «Ажлууд» хуудсанд ч мөн адил.",
+  showcaseAuto: "Автоматаар: хамгийн сүүлийн ажлын зураг",
+  showcasePick: "Зураг сонгох",
+  showcaseChange: "Зураг солих",
+  showcasePickTitle: "зураг сонгох",
+  showcaseNone: "Энэ төрлийн ажил алга. Сайтад харагдахгүй.",
 };
 
 export const adminAbout = {
